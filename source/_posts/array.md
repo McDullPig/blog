@@ -488,6 +488,7 @@ var minArray = function (numbers) {
   while (left <= right) {
     //每次和中间的比，只要中间大于right，就代表小的数在后面，
     let mid = Math.floor((left + right) / 2);
+    // let mid = left + ((right - left) >> 1) 这个也是查找中间值
     if (numbers[mid] > numbers[right]) {
       left = mid + 1;
     } else if (numbers[mid] < numbers[right]) {
@@ -648,10 +649,10 @@ var sumNums = function (n) {
 
 ```js
 var missingNumber = function (nums) {
-  let len = nums.length
-    if (!len) {
-        return 0
-    }
+  let len = nums.length;
+  if (!len) {
+    return 0;
+  }
   let low = 0;
   let high = len - 1;
   while (low <= high) {
@@ -663,5 +664,84 @@ var missingNumber = function (nums) {
     }
   }
   return low;
+};
+```
+
+#### 21. 构建乘积数组
+
+给定一个数组 A[0,1,…,n-1]，请构建一个数组 B[0,1,…,n-1]，其中 B[i] 的值是数组 A 中除了下标 i 以外的元素的积, 即 B[i]=A[0]×A[1]×…×A[i-1]×A[i+1]×…×A[n-1]。不能使用除法。
+
+```js
+// 动态规划： 两个数组，一个保存左边的乘积，一个保存右边的乘积，最后相乘
+var constructArr = function (a) {
+  let len = a.length;
+  if (len <= 1) {
+    return a;
+  }
+  let left = new Array(len).fill(1);
+  for (let i = 1; i < len; i++) {
+    left[i] = left[i - 1] * a[i - 1];
+  }
+  let right = new Array(len).fill(1);
+  for (let i = len - 2; i >= 0; i--) {
+    right[i] = right[i + 1] * a[i + 1];
+  }
+  let res = [];
+  for (let i = 0; i < len; i++) {
+    res[i] = left[i] * right[i];
+  }
+  return res;
+};
+```
+
+#### 22. 矩阵中的路径
+
+给一个二维网格和一个字符串，在网格中找到水平或垂直相邻单元格可以构成这个字符串的返回 true。
+
+```js
+// 使用DFS的方式，遍历数组
+var exist = function (board, word) {
+  let rows = board.length;
+  let cols = board[0].length;
+  if (rows === 0 || cols === 0 || word.length === 0) {
+    return false;
+  }
+  if (rows * cols < word.length) {
+    //如果二维数组的数量没有字符串的数量多，直接返回false
+    return false;
+  }
+  for (let i = 0; i < rows; i++) {
+    for (let j = 0; j < cols; j++) {
+      if (compare(board, word, i, j, 0)) {
+        //从第一个字符开始比较，如果有字符串的字符返回true
+        return true;
+      }
+    }
+  }
+  return false; //最后没有返回false
+};
+var compare = (board, word, i, j, k) => {
+  if (
+    i < 0 ||
+    j < 0 ||
+    j >= board[0].length ||
+    i >= board.length ||
+    board[i][j] !== word[k]
+  ) {
+    // 下标超出范围，或者值不相等，直接返回false
+    return false;
+  }
+  if (k === word.length - 1) {
+    //如果已经走到了字符串末尾，就返回true
+    return true;
+  }
+  board[i][j] = ""; // 将走过的字符清空，避免重复，因为深度遍历，所以如果返回false，再将每个字符重新填回去
+  let res =
+    compare(board, word, i + 1, j, k + 1) ||
+    compare(board, word, i, j + 1, k + 1) ||
+    compare(board, word, i - 1, j, k + 1) ||
+    compare(board, word, i, j - 1, k + 1); // 遍历前后左右
+  board[i][j] = word[k];
+  return res; //返回res
 };
 ```
