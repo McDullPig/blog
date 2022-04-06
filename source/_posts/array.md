@@ -745,3 +745,35 @@ var compare = (board, word, i, j, k) => {
   return res; //返回res
 };
 ```
+
+#### 23. 不用加减乘除做加法
+
+写一个函数，求两个整数之和，要求在函数体内不得使用 “+”、“-”、“\*”、“/” 四则运算符号。
+
+![e29b6738c98c7ddca478baa3b36c0fbd6df61db8cb16c4c4ea9b7522f0a4a2c7-image.png](https://pic.leetcode-cn.com/1608042254-oSQqco-e29b6738c98c7ddca478baa3b36c0fbd6df61db8cb16c4c4ea9b7522f0a4a2c7-image.png)
+
+```js
+// 异或：同为0，异为1，异或表示不进位的。
+// & :都为1才是1，&表示需要进位的。
+// 递归
+var add = function (a, b) {
+  if (a === 0) {
+    return b;
+  }
+  if (b === 0) {
+    return a;
+  }
+  const c = (a & b) << 1;
+  const d = a ^ b;
+  return add(c, d);
+};
+// 循环
+var add = function (a, b) {
+  while (b) {
+    let c = (a & b) << 1; // 进位
+    a ^= b; // 非进位和
+    b = c; // 进位
+  }
+  return a;
+};
+```
