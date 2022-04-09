@@ -39,7 +39,7 @@ var buildTree = function (preorder, inorder) {
 
 3）q 是 root，p 在 root 的子树上
 
-````js
+```js
 var lowestCommonAncestor = function (root, p, q) {
     if (!root || root === p || root === q) return root; //当root为null或等于p,q就返回root
     const left = lowestCommonAncestor(root.left, p, q);
@@ -96,6 +96,6 @@ const lowestCommonAncestor = (root, p, q) => {
     }
   }
 };
-````
+```
 
 #### 4、
