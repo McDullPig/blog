@@ -436,7 +436,7 @@ var myPow = function (x, n) {
 };
 
 // 位运算
-// >>> 无符号右移
+// >>> 无符号右移, 除以2中的操作
 // >>  右移
 var myPow = function (x, n) {
   if (n === 0) return 1;
@@ -602,7 +602,7 @@ var findContinuousSequence = function (target) {
   let right = 1; //左右指针都是在1开始
   let res = [];
   let sum = 1; //连续的和
-  while (left <= target >> 1) {
+  while (left <= target >>> 1) {
     //至少包含两个连续的数，所以当大于中间值时，两个数相加一定大于target
     sum = ((left + right) * (right - left + 1)) >> 1; //和是Sn=(a1+an)n / 2
     if (sum < target) {
@@ -667,34 +667,7 @@ var missingNumber = function (nums) {
 };
 ```
 
-#### 21. 构建乘积数组
-
-给定一个数组 A[0,1,…,n-1]，请构建一个数组 B[0,1,…,n-1]，其中 B[i] 的值是数组 A 中除了下标 i 以外的元素的积, 即 B[i]=A[0]×A[1]×…×A[i-1]×A[i+1]×…×A[n-1]。不能使用除法。
-
-```js
-// 动态规划： 两个数组，一个保存左边的乘积，一个保存右边的乘积，最后相乘
-var constructArr = function (a) {
-  let len = a.length;
-  if (len <= 1) {
-    return a;
-  }
-  let left = new Array(len).fill(1);
-  for (let i = 1; i < len; i++) {
-    left[i] = left[i - 1] * a[i - 1];
-  }
-  let right = new Array(len).fill(1);
-  for (let i = len - 2; i >= 0; i--) {
-    right[i] = right[i + 1] * a[i + 1];
-  }
-  let res = [];
-  for (let i = 0; i < len; i++) {
-    res[i] = left[i] * right[i];
-  }
-  return res;
-};
-```
-
-#### 22. 矩阵中的路径
+#### 21. 矩阵中的路径
 
 给一个二维网格和一个字符串，在网格中找到水平或垂直相邻单元格可以构成这个字符串的返回 true。
 
@@ -746,7 +719,7 @@ var compare = (board, word, i, j, k) => {
 };
 ```
 
-#### 23. 不用加减乘除做加法
+#### 22. 不用加减乘除做加法
 
 写一个函数，求两个整数之和，要求在函数体内不得使用 “+”、“-”、“\*”、“/” 四则运算符号。
 
@@ -775,5 +748,163 @@ var add = function (a, b) {
     b = c; // 进位
   }
   return a;
+};
+```
+
+#### 23. 扑克牌中的顺子
+
+从扑克牌中随机抽 5 张牌，判断是不是一个顺子，即这 5 张牌是不是连续的。2 ～ 10 为数字本身，A 为 1，J 为 11，Q 为 12，K 为 13，而大、小王为 0 ，可以看成任意数字。A 不能视为 14。
+
+```js
+//先从小到大排序，然后找到0的个数，判断是否重复，以及0的个数是否满足空缺位
+var isStraight = function (nums) {
+  let len = nums.length;
+  if (len < 5) {
+    return false;
+  }
+  nums = nums.sort((a, b) => a - b);
+  let i = 0;
+  let count = 0;
+  for (; i < len; i++) {
+    if (nums[i] === 0) {
+      count++;
+    } else {
+      break;
+    }
+  }
+  i++;
+  for (; i < len; i++) {
+    let temp = nums[i] - nums[i - 1];
+    if (temp > 1) {
+      if (count - temp + 1 >= 0) {
+        count -= temp - 1;
+      } else {
+        return false;
+      }
+    } else if (temp !== 1) {
+      return false;
+    }
+  }
+  return true;
+};
+
+/* 
+  分治思想 五张牌构成顺子的充分条件需要满足
+  1. 不重复 使用Set去重
+  2. max - min < 5 最大牌值 减去 最小牌值 小于5 且跳过大小王
+*/
+var isStraight = function (nums) {
+  const set = new Set();
+  let min = 14,
+    max = 0; // min和max的初始值是两个边界值[0, 13]
+  for (const num of nums) {
+    // 遇到大小王 跳过
+    if (!num) continue;
+    // 遇到重复则直接 返回false
+    if (set.has(num)) return false;
+    set.add(num);
+    // 迭代更新 min和max 以及set
+    min = Math.min(min, num);
+    max = Math.max(max, num);
+  }
+
+  return max - min < 5;
+};
+```
+
+#### 24. 队列的最大值：使用 o(1)的时间复杂度获取队列中最大的值。
+
+若队列为空，pop_front 和 max_value 需要返回 -1
+
+```js
+// 如果只用一个队列，那么只能和最大值或者最小值对比，每一次比对插入都需要移动数组中的内容，时间复杂度是O(n)。
+//使用单调队列：使用一个队列保存进出的顺序，另一个队列去保存最大值，要求最大值的队列是单调递减的,每次去除数组中前面比这个进来的数 A 小的数，因为在这个数 A 出去之前，前面最大的数就是这个进来的数 A。
+
+var MaxQueue = function () {
+  this.queue = [];
+  this.maxQueue = [];
+};
+
+/**
+ * @return {number}
+ */
+MaxQueue.prototype.max_value = function () {
+  return this.maxQueue.length === 0 ? -1 : this.maxQueue[0];
+};
+/**
+ * @param {number} value
+ * @return {void}
+ */
+MaxQueue.prototype.push_back = function (value) {
+  this.queue.push(value);
+  while (
+    this.maxQueue.length !== 0 &&
+    value > this.maxQueue[this.maxQueue.length - 1]
+  ) {
+    this.maxQueue.pop();
+  }
+  this.maxQueue.push(value);
+};
+
+/**
+ * @return {number}
+ */
+MaxQueue.prototype.pop_front = function () {
+  if (this.queue.length === 0) return -1;
+  let value = this.queue.shift();
+  if (value === this.maxQueue[0]) this.maxQueue.shift();
+  return value;
+};
+```
+
+#### 25. 滑动窗口的最大值
+
+给定一个数组 `nums` 和滑动窗口的大小 `k`，请找出所有滑动窗口里的最大值。
+
+```
+输入: nums = [1,3,-1,-3,5,3,6,7], 和 k = 3
+输出: [3,3,5,5,6,7]
+解释:
+  滑动窗口的位置                最大值
+---------------               -----
+[1  3  -1] -3  5  3  6  7       3
+ 1 [3  -1  -3] 5  3  6  7       3
+ 1  3 [-1  -3  5] 3  6  7       5
+ 1  3  -1 [-3  5  3] 6  7       5
+ 1  3  -1  -3 [5  3  6] 7       6
+ 1  3  -1  -3  5 [3  6  7]      7
+```
+
+```js
+var maxSlidingWindow = function (nums, k) {
+  if (nums.length < k || k < 1) {
+    return [];
+  }
+  if (k === 1) {
+    return nums;
+  }
+  let queue = []; //单调队列,单调递减队列.如果把最大值放在单调队列中，这样无法区分最大值的位置.
+  let res = []; //存储结果
+  let i = 0;
+  for (; i < k; i++) {
+    //找到第一个值应该放什么
+    while (queue.length && nums[i] > nums[queue[queue.length - 1]]) {
+      queue.pop();
+    }
+    queue.push(i);
+  }
+  res[0] = nums[queue[0]];
+  for (; i < nums.length; i++) {
+    if (i - queue[0] >= k) {
+      //超过范围的，就去掉这个值
+      queue.shift();
+    }
+    while (queue.length && nums[i] > nums[queue[queue.length - 1]]) {
+      queue.pop();
+    }
+    queue.push(i);
+    res.push(nums[queue[0]]);
+  }
+  return res;
 };
 ```
