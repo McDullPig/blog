@@ -908,3 +908,50 @@ var maxSlidingWindow = function (nums, k) {
   return res;
 };
 ```
+
+#### 26. 数组中出现的次数 2
+
+在一个数组 `nums` 中除一个数字只出现一次之外，其他数字都出现了三次。请找出那个只出现一次的数字。
+
+```js
+// 1. 使用对象存储
+var singleNumber = function (nums) {
+  const hash = {};
+  for (const num of nums) hash[num] ? hash[num]++ : (hash[num] = 1);
+  for (const k in hash) if (hash[k] === 1) return k;
+};
+// 位运算：计算每一位上的数是否是1，因为只有一个数是一次，其他都是3次，对3取余，如果整除说明不是1，否则是1
+var singleNumber = function (nums) {
+  let res = 0;
+  for (let bit = 0; bit < 32; ++bit) {
+    let mask = 1 << bit;
+    let count = 0; //统计该位1的出现次数情况
+    for (let num of nums) {
+      if (num & mask) ++count; // 该位是1, num & mask 不一定是1
+    }
+    if (count % 3) {
+      res = res | mask;
+    }
+  }
+  return res;
+};
+// 位运算：^是相同为0，不同为1，ones保存的是每次第一次出现的数的和，twos是第二次出现的数的和，第三次出现的数会让ones和twos中都减去这个数，让这个数为0
+var singleNumber = function (nums) {
+  let ones = 0,
+    twos = 0;
+  for (const num of nums) {
+    ones = ones ^ (num & ~twos);
+    twos = twos ^ (num & ~ones);
+  }
+  return ones;
+};
+// [3,4,3,3]
+// 3 ones====
+// 0 twos====
+// 7 ones====
+// 0 twos====
+// 4 ones====
+// 3 twos====
+// 4 ones====
+// 0 twos====
+```
