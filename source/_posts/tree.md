@@ -41,12 +41,12 @@ var buildTree = function (preorder, inorder) {
 
 ```js
 var lowestCommonAncestor = function (root, p, q) {
-    if (!root || root === p || root === q) return root; //当root为null或等于p,q就返回root
-    const left = lowestCommonAncestor(root.left, p, q);
-    const right = lowestCommonAncestor(root.right, p, q);
-    if (!left) return right; // 左子树找不到，返回右子树， 不用考虑左右子树都不存在的情况下，因为左右子树都不存在，也返回null，和这种情况一样
-    if (!right) return left; // 右子树找不到，返回左子树
-    return root;
+  if (!root || root === p || root === q) return root; //当root为null或等于p,q就返回root
+  const left = lowestCommonAncestor(root.left, p, q);
+  const right = lowestCommonAncestor(root.right, p, q);
+  if (!left) return right; // 左子树找不到，返回右子树， 不用考虑左右子树都不存在的情况下，因为左右子树都不存在，也返回null，和这种情况一样
+  if (!right) return left; // 右子树找不到，返回左子树
+  return root;
 };
 //返回结果
 //1.当left和right都为空，说明左右都不包含p,q，返回null
@@ -98,4 +98,19 @@ const lowestCommonAncestor = (root, p, q) => {
 };
 ```
 
-#### 4、
+#### 4、求二叉树的深度
+
+输入一棵二叉树的根节点，求该树的深度。从根节点到叶节点依次经过的节点（含根、叶节点）形成树的一条路径，最长路径的长度为树的深度。
+
+```js
+//深度遍历，还可以使用广度优选遍历
+var maxDepth = function (root) {
+  if (!root) {
+    return 0;
+  }
+  if (!root.left && !root.right) {
+    return 1;
+  }
+  return Math.max(maxDepth(root.left), maxDepth(root.right)) + 1;
+};
+```

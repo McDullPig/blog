@@ -909,7 +909,41 @@ var maxSlidingWindow = function (nums, k) {
 };
 ```
 
-#### 26. 数组中出现的次数 2
+#### 26. 数组中数字出现的次数
+
+一个整型数组 `nums` 里除两个数字之外，其他数字都出现了两次。请写程序找出这两个只出现一次的数字。要求时间复杂度是 O(n)，空间复杂度是 O(1)。
+
+```js
+var singleNumbers = function (nums) {
+  if (nums.length < 2) {
+    return [];
+  }
+  // 先异或一次，最后的值是两个不同的数字的异或值
+  let num1 = 0;
+  for (let num of nums) {
+    num1 = num1 ^ num;
+  }
+  // 找到某一位上是1的位置
+  let count = 1;
+  while ((count & num1) === 0) {
+    count = count << 1;
+  }
+  let num2 = 0;
+  let num3 = 0;
+  // 再异或一次，异或这位上是0在一组中，是1在一组中，将这两个不同的值分在两组中，相同的值必然在一组
+  for (let num of nums) {
+    if ((count & num) === 0) {
+      //count & num的值不是0或1，不一定为1
+      num2 = num2 ^ num;
+    } else {
+      num3 = num3 ^ num;
+    }
+  }
+  return [num2, num3];
+};
+```
+
+#### 27. 数组中出现的次数 2
 
 在一个数组 `nums` 中除一个数字只出现一次之外，其他数字都出现了三次。请找出那个只出现一次的数字。
 
