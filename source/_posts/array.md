@@ -989,3 +989,39 @@ var singleNumber = function (nums) {
 // 4 ones====
 // 0 twos====
 ```
+
+#### 28. 在排序数组中查找数字
+
+统计一个数字在排序数组中出现的次数。
+
+```js
+// 双指针
+var search = function (nums, target) {
+  // 2. 双端指针队列 向中心收敛 利用有序这一条件 Time: O(n) Space: O(1)
+  let l = 0,
+    r = nums.length - 1;
+  while (nums[l] < target) l++;
+  while (nums[r] > target) r--;
+  return r - l >= 0 ? r - l + 1 : 0;
+};
+// 二分递归
+var search = function (nums, target) {
+  let len = nums.length;
+  if (len === 0 || target < nums[0] || target > nums[len]) {
+    return 0;
+  }
+  let middle = Math.floor((len - 1) / 2);
+  let count = 0;
+  if (nums[middle] > target) {
+    count = search(nums.slice(0, middle), target);
+  } else if (nums[middle] < target) {
+    count = search(nums.slice(middle + 1), target);
+  } else {
+    count =
+      search(nums.slice(0, middle), target) +
+      search(nums.slice(middle + 1), target) +
+      1;
+  }
+  return count;
+};
+```
