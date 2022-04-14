@@ -114,3 +114,28 @@ var maxDepth = function (root) {
   return Math.max(maxDepth(root.left), maxDepth(root.right)) + 1;
 };
 ```
+
+#### 5、二叉搜索树中的第 K 大节点
+
+给定一棵二叉搜索树，请找出其中第 k 大的节点的值。
+
+```js
+//二叉搜索树的中序遍历是生序的，逆中序遍历就是从大到小输出，第k-1的值就是第k大的数，不用使用数组的形式。
+var kthLargest = function (root, k) {
+  if (k <= 0 || !root) {
+    return 0;
+  }
+  let max = 0; // 使用一个变量保存第K个值，担心遍历时导致返回的结果变化。
+  const DFS = (node) => {
+    //闭包
+    // 当遇到空节点时 递归终止
+    if (!node) return;
+    DFS(node.right);
+    // 当遍历k次后 终止查找并且设置最大值max
+    if (!--k) return (max = node.val);
+    DFS(node.left);
+  };
+  DFS(root);
+  return max;
+};
+```
