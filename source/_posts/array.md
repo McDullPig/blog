@@ -1025,3 +1025,86 @@ var search = function (nums, target) {
   return count;
 };
 ```
+
+#### 29. 数组中的逆序对
+
+在数组中的两个数字，如果前面一个数字大于后面的数字，则这两个数字组成一个逆序对。输入一个数组，求出这个数组中的逆序对的总数。
+
+```js
+// 归并，俩俩比较，然后44比较
+var reversePairs = function (nums) {
+  // 归并排序
+  let sum = 0;
+  mergeSort(nums);
+  return sum;
+
+  function mergeSort(nums) {
+    if (nums.length < 2) return nums;
+    let mid = (0 + nums.length - 1) >> 1;
+    let left = nums.slice(0, mid + 1); // 递归左边数组
+    let right = nums.slice(mid + 1); // 递归右边数组
+    return merge(mergeSort(left), mergeSort(right));
+  }
+
+  function merge(left, right) {
+    //合并左右数组
+    let res = [];
+    let leftLen = left.length;
+    let rightLen = right.length;
+    let len = leftLen + rightLen;
+    for (let index = 0, i = 0, j = 0; index < len; index++) {
+      if (i >= leftLen) res[index] = right[j++];
+      else if (j >= rightLen) res[index] = left[i++];
+      else if (left[i] <= right[j]) res[index] = left[i++];
+      else {
+        res[index] = right[j++]; //左边的值大于右边的，左边值后面的数都大于右边的数
+        sum += leftLen - i; //在归并排序中唯一加的一行代码
+      }
+    }
+    return res;
+  }
+};
+```
+
+#### 30. 机器人的运动范围
+
+地上有一个 m 行 n 列的方格，从坐标 [0,0] 到坐标 [m-1,n-1] 。一个机器人从坐标 [0, 0] 的格子开始移动，它每次可以向左、右、上、下移动一格（不能移动到方格外），也不能进入行坐标和列坐标的数位之和大于 k 的格子。例如，当 k 为 18 时，机器人能够进入方格 [35, 37] ，因为 3+5+3+7=18。但它不能进入方格 [35, 38]，因为 3+5+3+8=19。请问该机器人能够到达多少个格子？
+
+```js
+// 应该使用深度优先或广度优先，如果使用双重循环，有可能导致中间断开，没有连续
+var movingCount = function (m, n, k) {
+  if (k < 0) {
+    return -1;
+  }
+  // visited 用来记录走过的格子，避免重复
+  const visited = Array(m)
+    .fill(0)
+    .map((_) => Array(n).fill(false));
+  //计算位数和
+  function sum(n) {
+    let res = 0;
+    while (n) {
+      res += n % 10;
+      n = Math.floor(n / 10);
+    }
+    return res;
+  }
+  function dfs(x, y) {
+    // 对应三个终止条件，超过k值、到达边界、走过的格子
+    if (
+      x >= m ||
+      y >= n ||
+      x < 0 ||
+      y < 0 ||
+      sum(x) + sun(y) > k ||
+      visited[x][y]
+    ) {
+      return 0;
+    }
+    // 记录当前格子已经走过，返回当前计数 1 + 后续其他两个方向的总和
+    visited[x][y] = true;
+    return 1 + dfs(x + 1, y) + dfs(x, y + 1);
+  }
+  return dfs(0, 0);
+};
+```

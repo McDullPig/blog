@@ -139,3 +139,64 @@ var kthLargest = function (root, k) {
   return max;
 };
 ```
+
+#### 6、平衡二叉树
+
+输入一棵二叉树的根节点，判断该树是不是平衡二叉树。如果某二叉树中任意节点的左右子树的深度相差不超过 1，那么它就是一棵平衡二叉树。
+
+```js
+// 1. 自上而下
+// 如果树是空树，返回true，否则计算树节点的左右子树深度，不超过2，再判断左右子树是否为平衡二叉树。递归
+var isBalanced = function (root) {
+  if (!root) {
+    return true;
+  }
+  let left = depth(root.left);
+  let right = depth(root.right);
+  // 计算左子树和右子树的深度差
+  // 判断左右子树是否平衡
+  return (
+    Math.abs(left - right) < 2 &&
+    isBalanced(root.left) &&
+    isBalanced(root.right)
+  );
+};
+
+/**
+ * 深度计算函数
+ */
+var depth = function (root) {
+  if (!root) {
+    return 0;
+  } else {
+    // 取左右子树中深度比较大的值作为返回结果 +1
+    return Math.max(depth(root.left), depth(root.right)) + 1;
+  }
+};
+
+// 2. 自下而上
+// 自上而下，存在着大量的重复计算
+// 对左右子树递归调用深度函数计算深度，如果左子树结果为-1，返回-1，如果右子树结果为-1，返回-1，如果左右子树的差>1, 返回-1， 否则取左右子树深度值大的+1.
+// 结果为-1，就不是平衡二叉树，不为-1，就为平衡二叉树。
+var isBalanced = function (root) {
+  if (!root) {
+    return true;
+  }
+  return dfs(root) !== -1;
+};
+
+var dfs = (root) => {
+  if (!root) {
+    return 0;
+  }
+  let left = dfs(root.left);
+  let right = dfs(root.right);
+  if (left === -1 || right === -1) {
+    return -1;
+  } else if (Math.abs(left - right) >= 2) {
+    return -1;
+  } else {
+    return Math.max(left, right) + 1;
+  }
+};
+```
