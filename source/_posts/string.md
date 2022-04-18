@@ -250,3 +250,85 @@ var isNumber = function (s) {
   return numFlag;
 };
 ```
+
+#### 7. 正则表达式匹配
+
+请实现一个函数用来匹配包含'. '和'_'的正则表达式。模式中的字符'.'表示任意一个字符，而'_'表示它前面的字符可以出现任意次（含 0 次）。在本题中，匹配是指字符串的所有字符匹配整个模式。例如，字符串"aaa"与模式"a.a"和"ab*ac*a"匹配，但与"aa.a"和"ab\*a"均不匹配。
+
+```js
+var isMatch = function (s, p) {
+  if (s == null || p == null) {
+    return false;
+  }
+  let sIndex = 0,
+    pIndex = 0;
+  return matchCore(s, sIndex, p, pIndex);
+};
+
+const matchCore = (s, sIndex, p, pIndex) => {
+  // 如果都走到结尾了，返回成功
+  if (sIndex === s.length && pIndex === p.length) {
+    return true;
+  }
+  if (sIndex !== s.length && pIndex === p.length) {
+    return false;
+  }
+  // 如果第二个字符是*
+  if (pIndex + 1 !== p.length && p[pIndex + 1] === "*") {
+    if (
+      (sIndex !== s.length && p[pIndex] === s[sIndex]) ||
+      (p[pIndex] === "." && sIndex !== s.length)
+    ) {
+      return (
+        matchCore(s, sIndex + 1, p, pIndex + 2) || // 如果第一个字符匹配，将比对值匹配了一个字符
+        matchCore(s, sIndex + 1, p, pIndex) || //如果第一个字符是匹配，比对匹配多个字符
+        matchCore(s, sIndex, p, pIndex + 2)
+      ); // 匹配了0个字符,
+    } else {
+      //如果第一个字符就不匹配,连走两个
+      return matchCore(s, sIndex, p, pIndex + 2);
+    }
+  }
+  // 如果第二个字符不是*，
+  if (
+    (sIndex !== s.length && p[pIndex] === s[sIndex]) ||
+    (p[pIndex] === "." && sIndex !== s.length)
+  ) {
+    //只有当第一个字符相等或者是.的时候继续遍历
+    return matchCore(s, sIndex + 1, p, pIndex + 1);
+  }
+  return false;
+};
+```
+
+#### 8. 最长不含重复字符的子字符串
+
+请从字符串中找出一个最长的不包含重复字符的子字符串，计算该最长子字符串的长度。
+
+> 输入: "abcabcbb"
+> 输出: 3
+> 解释: 因为无重复字符的最长子串是 "abc"，所以其长度为 3。
+
+```js
+var lengthOfLongestSubstring = function (s) {
+  let len = s.length;
+  if (len <= 1) {
+    return len;
+  }
+  let max = 0;
+  let map = new Map(); //key=值，value=下标
+  let slow = -1;
+  let fast = 0; //快慢指针
+  for (; fast < len; fast++) {
+    if (map.has(s[fast]) && map.get(s[fast]) > slow) {
+      //如果在map中存在，而且存在的这个下标在slow后面才赋值，在slow前面证明没有计算到这个值，可以忽略
+      slow = map.get(s[fast]); //替换，
+    } else {
+      // 没重复：更新 max
+      max = Math.max(max, fast - slow);
+    }
+    map.set(s[fast], fast); //放到map中
+  }
+  return max;
+};
+```
