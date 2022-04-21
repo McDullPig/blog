@@ -200,3 +200,37 @@ var dfs = (root) => {
   }
 };
 ```
+
+#### 7、树的子结构
+
+判断 B 树是不是 A 树的子结构，空树不是任何树的子树
+
+```js
+var isSubStructure = function (A, B) {
+  if (!A || !B) {
+    //如果A、B树有空树就返回false
+    return false;
+  }
+  let result = false;
+  if (A.val === B.val) {
+    //只有A树中节点和B树中根节点值相同，才会去判断子节点
+    result = compare(A, B);
+  }
+  result = result || isSubStructure(A.left, B) || isSubStructure(A.right, B); //否则就遍历左右子树，找到A中与B根节点相同的节点。
+  return result;
+};
+var compare = function (parent, child) {
+  if (!child) {
+    //如果子树中子节点为空，返回true
+    return true;
+  }
+  if (!parent) {
+    //如果子树中节点不为空，但是父树中节点为空，返回false
+    return false;
+  }
+  if (parent.val !== child.val) {
+    return false;
+  }
+  return compare(parent.left, child.left) && compare(parent.right, child.right);
+};
+```
