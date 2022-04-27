@@ -85,8 +85,8 @@ var getKthFromEnd = function (head, k) {
  * @return {ListNode}
  */
 var reverseList = function (head) {
-  if (!head) {
-    return null;
+  if (!head || head.next === null) {
+    return head;
   }
   let pre = new ListNode(-1);
   pre.next = null;
@@ -173,7 +173,7 @@ var reversePrint = function (head) {
 };
 ```
 
-#### 6. 两个链表的第一个公共节点
+#### 6. 两个链表的第一个公共节点,相交链表
 
 输入两个链表，找出它们的第一个公共节点。
 
@@ -306,4 +306,114 @@ var copyRandomList = function (head) {
 };
 ```
 
-#### 8. 
+#### 8. 分隔链表
+
+给你一个链表的头节点 head 和一个特定值 x ，请你对链表进行分隔，使得所有 小于 x 的节点都出现在 大于或等于 x 的节点之前。
+
+你应当 保留 两个分区中每个节点的初始相对位置。
+
+```js
+// 使用两个链表small和large,small维护小于x的链表，最后将small的尾结点指向large的头结点
+var partition = function (head, x) {
+  let small = new ListNode(0);
+  const smallHead = small;
+  let large = new ListNode(0);
+  const largeHead = large;
+  while (head !== null) {
+    if (head.val < x) {
+      small.next = head;
+      small = small.next;
+    } else {
+      large.next = head;
+      large = large.next;
+    }
+    head = head.next;
+  }
+  large.next = null;
+  small.next = largeHead.next;
+  return smallHead.next;
+};
+```
+
+#### 9. 反转链表 2
+
+给你单链表的头指针 head 和两个整数  left 和 right ，其中  left <= right 。请你反转从位置 left 到位置 right 的链表节点，返回 反转后的链表
+
+```js
+var reverseBetween = function (head, left, right) {
+  if (!head || !head.next) {
+    //如果只有一个就返回
+    return head;
+  }
+  let preHead = new ListNode(-1); // 加一个虚拟的头结点，头插法会更好写
+  let pre = preHead;
+  pre.next = head;
+  for (let i = 1; i < left; i++) {
+    // 先走到需要反转的前一个节点
+    pre = pre.next;
+  }
+  let cur = pre.next;
+  for (let i = 1; i <= right - left; i++) {
+    //反转需要反转的节点，链表别断，就是让当前节点指向next.next
+    const next = cur.next;
+    cur.next = next.next;
+    next.next = pre.next;
+    pre.next = next;
+  }
+  return preHead.next;
+};
+```
+
+#### 10.环形链表 2
+
+给定一个链表的头节点  head ，返回链表开始入环的第一个节点。  如果链表无环，则返回  null。
+
+如果链表中有某个节点，可以通过连续跟踪 next 指针再次到达，则链表中存在环。 为了表示给定链表中的环，评测系统内部使用整数 pos 来表示链表尾连接到链表中的位置（索引从 0 开始）。如果 pos 是 -1，则在该链表中没有环。注意：pos 不作为参数进行传递，仅仅是为了标识链表的实际情况。
+
+```js
+//哈希表: 遍历节点，如果有环的话，map中会存在当前节点。
+var detectCycle = function (head) {
+  if (!head || !head.next) {
+    return null;
+  }
+  let map = new Map();
+  let node = head;
+  while (node) {
+    if (map.get(node)) {
+      return node;
+    } else {
+      map.set(node, true);
+      node = node.next;
+    }
+  }
+  return null;
+};
+// 快慢指针: 在有环的前提下，slow 走过 x+y, fast 走过 x+y+n(y+z)
+//fast走的节点是slow的2倍：2(x+y) = x+y+n(y+z)
+//x = n(y+z) -y = (n-1)(y+z) +z   n =1 =>x = z
+var detectCycle = function (head) {
+  if (!head || !head.next) {
+    return null;
+  }
+  let fast = (slow = head);
+  // 第一次相遇
+  while (fast && fast.next) {
+    fast = fast.next.next;
+    slow = slow.next;
+    if (slow === fast) {
+      break;
+    }
+  }
+  // 判断fast是否为空
+  if (!fast || !fast.next) {
+    return null;
+  }
+  // 让slow重新指向head
+  slow = head;
+  while (slow !== fast) {
+    fast = fast.next;
+    slow = slow.next;
+  }
+  return slow;
+};
+```
