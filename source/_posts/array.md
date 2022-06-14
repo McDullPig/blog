@@ -1,4 +1,114 @@
-### 数组中的算法
+## 记录自己做过的算法和解析
+
+### 1、数组
+
+### 2、二分查找
+
+#### 1、二分查找
+
+给定一个 n 个元素有序的（升序）整型数组 nums 和一个目标值 target  ，写一个函数搜索  nums  中的 target，如果目标值存在返回下标，否则返回 -1。
+
+```js
+var search = function (nums, target) {
+  const len = nums.length;
+  if (len < 1 || nums[0] > target || nums[len - 1] < target) {
+    return -1;
+  }
+  let left = 0;
+  let right = len - 1;
+  while (left <= right) {
+    const mid = left + ((right - left) >> 1);
+    if (nums[mid] === target) {
+      return mid;
+    } else if (nums[mid] > target) {
+      right = mid - 1;
+    } else {
+      left = mid + 1;
+    }
+  }
+  return -1;
+};
+```
+
+#### 2、第一个错误的版本
+
+你是产品经理，目前正在带领一个团队开发新的产品。不幸的是，你的产品的最新版本没有通过质量检测。由于每个版本都是基于之前的版本开发的，所以错误的版本之后的所有版本都是错的。
+
+假设你有 n 个版本 [1, 2, ..., n]，你想找出导致之后所有版本出错的第一个错误的版本。
+
+你可以通过调用  bool isBadVersion(version)  接口来判断版本号 version 是否在单元测试中出错。实现一个函数来查找第一个错误的版本。你应该尽量减少对调用 API 的次数。
+
+```js
+/**
+ * Definition for isBadVersion()
+ *
+ * @param {integer} version number
+ * @return {boolean} whether the version is bad
+ * isBadVersion = function(version) {
+ *     ...
+ * };
+ */
+
+/**
+ * @param {function} isBadVersion()
+ * @return {function}
+ */
+var solution = function (isBadVersion) {
+  /**
+   * @param {integer} n Total versions
+   * @return {integer} The first bad version
+   */
+  return function (n) {
+    let left = 1;
+    let right = n;
+    while (left <= right) {
+      let mid = left + ((right - left) >> 1);
+      //如果中间的值是错误的版本，就向前面的区间中找，
+      if (isBadVersion(mid)) {
+        right = mid - 1;
+      } else {
+        left = mid + 1;
+      }
+    }
+    return left;
+  };
+};
+```
+
+#### 3、搜索插入位置
+
+给定一个排序数组和一个目标值，在数组中找到目标值，并返回其索引。如果目标值不存在于数组中，返回它将会被按顺序插入的位置。
+
+请必须使用时间复杂度为 O(log n) 的算法。
+
+```js
+var searchInsert = function (nums, target) {
+  let len = nums.length;
+  // 空数组或者比数组中第一个值小，就返回0
+  if (len < 1 || nums[0] > target) {
+    return 0;
+  }
+  // 比数组中最大的数都大，就返回len
+  if (nums[len - 1] < target) {
+    return len;
+  }
+  let left = 0;
+  let right = len - 1;
+  while (left <= right) {
+    let mid = left + ((right - left) >> 1);
+    if (nums[mid] > target) {
+      right = mid - 1;
+    } else if (nums[mid] < target) {
+      left = mid + 1;
+    } else {
+      return mid;
+    }
+  }
+  return left;
+};
+```
+
+### 剑指 offer 中的算法
 
 #### 1. 数组中重复的数字
 
@@ -41,7 +151,7 @@ var findRepeatNumber = function (nums) {
       continue;
     }
     if (nums[i] === nums[nums[i]]) return nums[i];
-    // [nums[i], nums[nums[i]]]=[nums[nums[i]], nums[i]]: 这样写会超时
+    // [nums[i], nums[nums[i]]]=[nums[nums[i]], nums[i]]: 这样写会超时,因为nums[i]会变
     let temp = nums[i];
     nums[i] = nums[temp];
     nums[temp] = temp;
@@ -80,162 +190,6 @@ var findNumberIn2DArray = function (matrix, target) {
     }
   }
   return false;
-};
-```
-
-#### 3. 用两个栈实现队列
-
-用两个栈实现一个队列。队列的声明如下，请实现它的两个函数 appendTail 和 deleteHead ，分别完成在队列尾部插入整数和在队列头部删除整数的功能。(若队列中没有元素，deleteHead  操作返回 -1 )
-
-```js
-//js数组单独可以当队列使用，如果一定要使用栈改成队列的话，使用两个栈，一个 保存数据，把栈出来进另一个栈，就是出来的顺序。
-
-// 不是每次都在一个栈进另一个栈，只有当B栈没有数据的时候，再在A栈进B栈，如果进完还是没有数据，返回-1。
-var CQueue = function () {
-  this.stack = [];
-  this.stack1 = [];
-};
-
-/**
- * @param {number} value
- * @return {void}
- */
-CQueue.prototype.appendTail = function (value) {
-  this.stack.push(value);
-};
-
-/**
- * @return {number}
- * 只有每次出栈的栈中没有数据，才会把入栈的数据放到出栈的栈中
- */
-CQueue.prototype.deleteHead = function () {
-  if (this.stack.length === 0 && this.stack1.length === 0) {
-    return -1;
-  }
-  if (this.stack1.length !== 0) {
-    return this.stack1.pop();
-  }
-  while (this.stack.length) {
-    this.stack1.push(this.stack.pop());
-  }
-  return this.stack1.pop();
-};
-
-/**
- * Your CQueue object will be instantiated and called as such:
- * var obj = new CQueue()
- * obj.appendTail(value)
- * var param_2 = obj.deleteHead()
- */
-```
-
-#### 4. 栈的压入、弹出序列
-
-输入两个整数序列，第一个序列表示栈的压入顺序，请判断第二个序列是否为该栈的弹出顺序。假设压入栈的所有数字均不相等。例如，序列 {1,2,3,4,5} 是某栈的压栈序列，序列 {4,5,3,2,1} 是该压栈序列对应的一个弹出序列，但 {4,3,5,1,2} 就不可能是该压栈序列的弹出序列。
-
-```js
-/**
- * @param {number[]} pushed
- * @param {number[]} popped
- * @return {boolean}
- */
-var validateStackSequences = function (pushed, popped) {
-  let pushLen = pushed.length;
-  let popLen = popped.length;
-  if (pushLen !== popLen) {
-    return false;
-  }
-  if (pushLen === 0 && popLen === 0) {
-    return true;
-  }
-  let stack = [];
-  let j = 0;
-  for (let i = 0; i < pushLen; i++) {
-    stack.push(pushed[i]);
-    while (stack.length !== 0 && stack[stack.length - 1] === popped[j]) {
-      j++;
-      stack.pop();
-    }
-  }
-  return stack.length === 0 && j === popLen;
-};
-
-//栈和双指针
-var validateStackSequences = function (pushed, popped) {
-  let stack = [];
-  let i = 0;
-  let j = 0;
-  while (i < pushed.length) {
-    if (stack.length && popped[j] == stack[stack.length - 1]) {
-      stack.pop();
-      j++;
-    } else {
-      stack.push(pushed[i++]);
-    }
-  }
-  while (j < popped.length) {
-    if (popped[j++] == stack[stack.length - 1]) {
-      stack.pop();
-    } else {
-      return false;
-    }
-  }
-  return true;
-};
-```
-
-#### 5. 包含 min 函数的栈
-
-定义栈的数据结构，请在该类型中实现一个能够得到栈的最小元素的 min 函数在该栈中，调用 min、push 及 pop 的时间复杂度都是 O(1)。
-
-```js
-/**
- * initialize your data structure here.
- */
-var MinStack = function () {
-  this.stack = []; //构造函数中使用this
-  this.minStack = [];
-};
-
-/**
- * @param {number} x
- * @return {void}
- */
-MinStack.prototype.push = function (x) {
-  if (
-    this.minStack.length === 0 ||
-    this.minStack[this.minStack.length - 1] >= x
-  ) {
-    this.minStack.push(x);
-  }
-  this.stack.push(x);
-};
-
-/**
- * @return {void}
- */
-MinStack.prototype.pop = function () {
-  let poppedValue = this.stack.pop();
-  if (poppedValue === this.minStack[this.minStack.length - 1]) {
-    this.minStack.pop();
-  }
-};
-
-/**
- * @return {number}
- */
-MinStack.prototype.top = function () {
-  return this.stack[this.stack.length - 1];
-};
-
-/**
- * @return {number}
- */
-MinStack.prototype.min = function () {
-  if (this.minStack.length) {
-    return this.minStack[this.minStack.length - 1];
-  }
-  return -1;
 };
 ```
 
@@ -288,36 +242,6 @@ var printNumbers = function (n) {
   return res.fill(1).map((i, index) => {
     return index + 1;
   });
-};
-```
-
-#### 8. 和为 s 的两个数字
-
-输入一个递增排序的数组和一个数字 s，在数组中查找两个数，使得它们的和正好是 s。如果有多对数字的和等于 s，则输出任意一对即可。
-
-```js
-/**
- * @param {number[]} nums
- * @param {number} target
- * @return {number[]}
- */
-var twoSum = function (nums, target) {
-  let len = nums.length;
-  if (len < 2 || target < nums[0]) {
-    return [];
-  }
-  let left = 0;
-  let right = len - 1;
-  while (left < right) {
-    if (nums[left] + nums[right] === target) {
-      return [nums[left], nums[right]];
-    } else if (nums[left] + nums[right] < target) {
-      left++;
-    } else {
-      right--;
-    }
-  }
-  return [];
 };
 ```
 
@@ -1026,46 +950,6 @@ var search = function (nums, target) {
 };
 ```
 
-#### 29. 数组中的逆序对
-
-在数组中的两个数字，如果前面一个数字大于后面的数字，则这两个数字组成一个逆序对。输入一个数组，求出这个数组中的逆序对的总数。
-
-```js
-// 归并，俩俩比较，然后44比较
-var reversePairs = function (nums) {
-  // 归并排序
-  let sum = 0;
-  mergeSort(nums);
-  return sum;
-
-  function mergeSort(nums) {
-    if (nums.length < 2) return nums;
-    let mid = (0 + nums.length - 1) >> 1;
-    let left = nums.slice(0, mid + 1); // 递归左边数组
-    let right = nums.slice(mid + 1); // 递归右边数组
-    return merge(mergeSort(left), mergeSort(right));
-  }
-
-  function merge(left, right) {
-    //合并左右数组
-    let res = [];
-    let leftLen = left.length;
-    let rightLen = right.length;
-    let len = leftLen + rightLen;
-    for (let index = 0, i = 0, j = 0; index < len; index++) {
-      if (i >= leftLen) res[index] = right[j++];
-      else if (j >= rightLen) res[index] = left[i++];
-      else if (left[i] <= right[j]) res[index] = left[i++];
-      else {
-        res[index] = right[j++]; //左边的值大于右边的，左边值后面的数都大于右边的数
-        sum += leftLen - i; //在归并排序中唯一加的一行代码
-      }
-    }
-    return res;
-  }
-};
-```
-
 #### 30. 机器人的运动范围
 
 地上有一个 m 行 n 列的方格，从坐标 [0,0] 到坐标 [m-1,n-1] 。一个机器人从坐标 [0, 0] 的格子开始移动，它每次可以向左、右、上、下移动一格（不能移动到方格外），也不能进入行坐标和列坐标的数位之和大于 k 的格子。例如，当 k 为 18 时，机器人能够进入方格 [35, 37] ，因为 3+5+3+7=18。但它不能进入方格 [35, 38]，因为 3+5+3+8=19。请问该机器人能够到达多少个格子？
@@ -1106,5 +990,1012 @@ var movingCount = function (m, n, k) {
     return 1 + dfs(x + 1, y) + dfs(x, y + 1);
   }
   return dfs(0, 0);
+};
+```
+
+#### 31. 把数组排成最小的数
+
+输入一个非负整数数组，把数组里所有数字拼接起来排成一个数，打印能拼接出的所有数字中最小的一个。
+
+```js
+// sort()排序
+var minNumber = function (nums) {
+  return nums
+    .sort((a, b) => {
+      return "" + a + b - ("" + b + a);
+    })
+    .join("");
+};
+//主要考察快排， i， j， 一次能确定一个值放在哪个位置，
+var minNumber = function (nums) {
+  let len = nums.length;
+  if (len < 1) {
+    return "";
+  }
+  let pivot = nums[0];
+  let left = nums.filter((item) => `${item}${pivot}` < `${pivot}${item}`);
+  let eq = nums.filter((item) => `${item}${pivot}` === `${pivot}${item}`);
+  let right = nums.filter((item) => `${item}${pivot}` > `${pivot}${item}`);
+  let array = [...minNumber(left), ...eq, ...minNumber(right)];
+  return array.join("");
+};
+```
+
+### 数组
+
+#### 1、和为 s 的两个数字
+
+输入一个递增排序的数组和一个数字 s，在数组中查找两个数，使得它们的和正好是 s。如果有多对数字的和等于 s，则输出任意一对即可。
+
+```js
+/**
+ * @param {number[]} nums
+ * @param {number} target
+ * @return {number[]}
+ */
+var twoSum = function (nums, target) {
+  let len = nums.length;
+  if (len < 2 || target < nums[0]) {
+    return [];
+  }
+  let left = 0;
+  let right = len - 1;
+  while (left < right) {
+    if (nums[left] + nums[right] === target) {
+      return [nums[left], nums[right]];
+    } else if (nums[left] + nums[right] < target) {
+      left++;
+    } else {
+      right--;
+    }
+  }
+  return [];
+};
+```
+
+#### 2、三数之和
+
+给你一个包含 n 个整数的数组  nums，判断  nums  中是否存在三个元素 a，b，c ，使得  a + b + c = 0 ？请你找出所有和为 0 且不重复的三元组。
+
+注意：答案中不可以包含重复的三元组。
+
+```js
+var threeSum = function (nums) {
+  nums.sort((a, b) => a - b); //排序，排序之后循环找
+  const len = nums.length;
+  if (len < 3 || nums[0] > 0) {
+    return [];
+  }
+  let res = [];
+  for (let i = 0; i < len - 2; i++) {
+    // 只对比当前数字后面的数，所以排序数组如果大于0，后面的和一定大于0
+    if (nums[i] > 0) {
+      break;
+    }
+    // 如果当前的值和前面的一样，会出现重复的数，所以忽略掉这个值
+    if (i > 0 && nums[i] === nums[i - 1]) {
+      continue;
+    }
+    let left = i + 1;
+    let right = len - 1;
+    while (left < right) {
+      const sum = nums[i] + nums[left] + nums[right];
+      if (sum === 0) {
+        res.push([nums[i], nums[left], nums[right]]);
+        // 下面两个while循环是去重的，[-2,0,0,2,2]
+        while (left < right && nums[left] === nums[left + 1]) {
+          left++;
+        }
+        while (left < right && nums[right] === nums[right - 1]) {
+          right--;
+        }
+        left++;
+        right--;
+      } else if (sum < 0) {
+        left++;
+      } else if (sum > 0) {
+        right--;
+      }
+    }
+  }
+  return res;
+};
+```
+
+### 栈
+
+#### 1、有效的括号
+
+给定一个只包括 '('，')'，'{'，'}'，'['，']'  的字符串 s ，判断字符串是否有效。
+
+```js
+var isValid = function (s) {
+  if (s.length < 1) {
+    return true;
+  }
+  let map = {
+    ")": "(",
+    "}": "{",
+    "]": "[",
+  };
+  let stack = []; //使用栈，将左边括号进栈
+  for (let i = 0; i < s.length; i++) {
+    if (s[i] === "(" || s[i] === "{" || s[i] === "[") {
+      stack.push(s[i]);
+    } else {
+      if (stack.length !== 0 && stack[stack.length - 1] === map[s[i]]) {
+        stack.pop();
+      } else {
+        return false;
+      }
+    }
+  }
+  return stack.length === 0;
+};
+```
+
+#### 1-1、有效的括号字符串
+
+给定一个只包含三种字符的字符串：（ ，）  和 \*，写一个函数来检验这个字符串是否为有效字符串。有效字符串具有如下规则：
+
+任何左括号 (  必须有相应的右括号 )。
+任何右括号 )  必须有相应的左括号 ( 。
+左括号 ( 必须在对应的右括号之前 )。
+\*  可以被视为单个右括号 ) ，或单个左括号 ( ，或一个空字符串。
+一个空字符串也被视为有效字符串。
+
+```js
+// 两个栈，一个存放左括号的下标，一个存放*号的下标
+var checkValidString = function (s) {
+  let len = s.length;
+  if (len === 0) {
+    return true;
+  }
+  let stack = [];
+  let stack1 = [];
+  for (let i = 0; i < len; i++) {
+    if (s[i] === "(") {
+      stack.push(i);
+    }
+    if (s[i] === "*") {
+      stack1.push(i);
+    }
+    if (s[i] === ")") {
+      if (stack.length !== 0) {
+        stack.pop();
+      } else if (stack1.length !== 0) {
+        stack1.pop();
+      } else {
+        return false;
+      }
+    }
+  }
+  while (stack.length && stack1.length) {
+    let leftValue = stack.pop();
+    let starValue = stack1.pop();
+    if (leftValue > starValue) {
+      return false;
+    }
+  }
+  return stack.length === 0;
+};
+```
+
+#### 2、基本计算器
+
+给你一个字符串表达式 s ，请你实现一个基本计算器来计算并返回它的值。
+
+```js
+
+```
+
+#### 3、包含 min 函数的栈
+
+定义栈的数据结构，请在该类型中实现一个能够得到栈的最小元素的 min 函数在该栈中，调用 min、push 及 pop 的时间复杂度都是 O(1)。
+
+```js
+/**
+ * initialize your data structure here.
+ */
+var MinStack = function () {
+  this.stack = []; //构造函数中使用this
+  this.minStack = [];
+};
+
+/**
+ * @param {number} x
+ * @return {void}
+ */
+MinStack.prototype.push = function (x) {
+  if (
+    this.minStack.length === 0 ||
+    this.minStack[this.minStack.length - 1] >= x
+  ) {
+    this.minStack.push(x);
+  }
+  this.stack.push(x);
+};
+
+/**
+ * @return {void}
+ */
+MinStack.prototype.pop = function () {
+  if (this.stack.length !== 0) {
+    let pop = this.stack.pop();
+    if (pop === this.minStack[this.minStack.length - 1]) {
+      this.minStack.pop();
+    }
+  }
+};
+
+/**
+ * @return {number}
+ */
+MinStack.prototype.top = function () {
+  return this.stack[this.stack.length - 1];
+};
+
+/**
+ * @return {number}
+ */
+MinStack.prototype.min = function () {
+  if (this.minStack.length) {
+    return this.minStack[this.minStack.length - 1];
+  }
+  return -1;
+};
+```
+
+#### 4、栈的压入、弹出序列
+
+输入两个整数序列，第一个序列表示栈的压入顺序，请判断第二个序列是否为该栈的弹出顺序。假设压入栈的所有数字均不相等。例如，序列 {1,2,3,4,5} 是某栈的压栈序列，序列 {4,5,3,2,1} 是该压栈序列对应的一个弹出序列，但 {4,3,5,1,2} 就不可能是该压栈序列的弹出序列。
+
+```js
+/**
+ * @param {number[]} pushed
+ * @param {number[]} popped
+ * @return {boolean}
+ */
+var validateStackSequences = function (pushed, popped) {
+  let pushLen = pushed.length;
+  let popLen = popped.length;
+  if (pushLen !== popLen) {
+    return false;
+  }
+  if (pushLen === 0 && popLen === 0) {
+    return true;
+  }
+  let stack = [];
+  let j = 0;
+  for (let i = 0; i < pushLen; i++) {
+    stack.push(pushed[i]);
+    while (stack.length !== 0 && stack[stack.length - 1] === popped[j]) {
+      j++;
+      stack.pop();
+    }
+  }
+  return stack.length === 0 && j === popLen;
+};
+
+//栈和双指针
+var validateStackSequences = function (pushed, popped) {
+  let stack = [];
+  let i = 0;
+  let j = 0;
+  while (i < pushed.length) {
+    if (stack.length && popped[j] == stack[stack.length - 1]) {
+      stack.pop();
+      j++;
+    } else {
+      stack.push(pushed[i++]);
+    }
+  }
+  while (j < popped.length) {
+    if (popped[j++] == stack[stack.length - 1]) {
+      stack.pop();
+    } else {
+      return false;
+    }
+  }
+  return true;
+};
+```
+
+#### 5、每日温度
+
+给定一个整数数组  temperatures ，表示每天的温度，返回一个数组  answer ，其中  answer[i]  是指在第 i 天之后，才会有更高的温度。如果气温在这之后都不会升高，请在该位置用  0 来代替。
+
+```js
+// 单调栈：通常是一维数组，向一个方向(左或者右)比较比自己大（或者小）的元素。
+
+//   栈内元素从下往上，依次减小，新元素快速从小到大比较，剔除小项的位置，让新的元素进行补充
+//     时间复杂度要求在 O(n)
+
+var dailyTemperatures = function (temperatures) {
+  if (temperatures < 1) {
+    return [];
+  }
+  let len = temperatures.length;
+  let stack = [];
+  let res = new Array(len).fill(0);
+  for (let i = 0; i < len; i++) {
+    while (
+      stack.length &&
+      temperatures[i] > temperatures[stack[stack.length - 1]]
+    ) {
+      res[stack[stack.length - 1]] = i - stack[stack.length - 1];
+      stack.pop();
+    }
+    stack.push(i);
+  }
+  return res;
+};
+```
+
+### 队列
+
+#### 1、用栈实现队列
+
+用两个栈实现一个队列。队列的声明如下，请实现它的两个函数 appendTail 和 deleteHead ，分别完成在队列尾部插入整数和在队列头部删除整数的功能。(若队列中没有元素，deleteHead  操作返回 -1 )
+
+```js
+//js数组单独可以当队列使用，如果一定要使用栈改成队列的话，使用两个栈，一个 保存数据，把栈出来进另一个栈，就是出来的顺序。
+
+// 不是每次都在一个栈进另一个栈，只有当B栈没有数据的时候，再在A栈进B栈，如果进完还是没有数据，返回-1。
+
+var MyQueue = function () {
+  this.pushed = [];
+  this.popped = [];
+};
+
+/**
+ * @param {number} x
+ * @return {void}
+ */
+MyQueue.prototype.push = function (x) {
+  this.pushed.push(x);
+};
+
+/**
+ * @return {number}
+ * 只有每次出栈的栈中没有数据，才会把入栈的数据放到出栈的栈中
+ */
+MyQueue.prototype.pop = function () {
+  if (this.popped.length !== 0) {
+    return this.popped.pop();
+  } else {
+    while (this.pushed.length !== 0) {
+      this.popped.push(this.pushed.pop());
+    }
+    return this.popped.length !== 0 ? this.popped.pop() : -1;
+  }
+};
+
+/**
+ * @return {number}
+ */
+MyQueue.prototype.peek = function () {
+  if (this.popped.length !== 0) {
+    return this.popped[this.popped.length - 1];
+  } else {
+    if (this.pushed.length !== 0) {
+      return this.pushed[0];
+    } else {
+      return -1;
+    }
+  }
+};
+
+/**
+ * @return {boolean}
+ */
+MyQueue.prototype.empty = function () {
+  if (this.pushed.length === 0 && this.popped.length === 0) {
+    return true;
+  }
+  return false;
+};
+```
+
+### 排序
+
+#### 1、合并两个有序数组
+
+给你两个按 非递减顺序 排列的整数数组  nums1 和 nums2，另有两个整数 m 和 n ，分别表示 nums1 和 nums2 中的元素数目。
+
+请你 合并 nums2 到 nums1 中，使合并后的数组同样按 非递减顺序 排列。
+
+注意：最终，合并后数组不应由函数返回，而是存储在数组 nums1 中。为了应对这种情况，nums1 的初始长度为 m + n，其中前 m 个元素表示应合并的元素，后 n 个元素为 0 ，应忽略。nums2 的长度为 n 。
+
+```js
+var merge = function (nums1, m, nums2, n) {
+  let len1 = nums1.length;
+  if (len1 !== m + n || m < 0 || n < 0) {
+    return;
+  }
+  if (n === 0) {
+    return nums1;
+  }
+  let p1 = m - 1,
+    p2 = n - 1;
+  let tail = m + n - 1;
+  let cur;
+  while (p1 >= 0 || p2 >= 0) {
+    if (p1 === -1) {
+      cur = nums2[p2--];
+    } else if (p2 === -1) {
+      cur = nums1[p1--];
+    } else if (nums1[p1] > nums2[p2]) {
+      cur = nums1[p1--];
+    } else {
+      cur = nums2[p2--];
+    }
+    nums1[tail--] = cur;
+  }
+};
+```
+
+#### 2、颜色分类
+
+给定一个包含红色、白色和蓝色、共  n 个元素的数组  nums ，原地对它们进行排序，使得相同颜色的元素相邻，并按照红色、白色、蓝色顺序排列。
+
+我们使用整数 0、 1 和 2 分别表示红色、白色和蓝色。
+
+必须在不使用库的 sort 函数的情况下解决这个问题。
+
+```js
+var sortColors = function (nums) {
+  let len = nums.length;
+  if (len <= 1) {
+    return;
+  }
+  let p = -1; // 前面放0
+  let q = nums.length; //后面放2
+  let i = 0;
+  while (i < q) {
+    if (nums[i] == 0) {
+      [nums[p + 1], nums[i]] = [nums[i], nums[p + 1]];
+      p = p + 1;
+      i++;
+    } else if (nums[i] == 2) {
+      [nums[i], nums[q - 1]] = [nums[q - 1], nums[i]];
+      q = q - 1;
+    } else if (nums[i] == 1) {
+      i++;
+    }
+  }
+};
+```
+
+#### 3、两数之和
+
+给定一个整数数组 nums  和一个整数目标值 target，请你在该数组中找出 和为目标值 target  的那   两个   整数，并返回它们的数组下标。
+
+你可以假设每种输入只会对应一个答案。但是，数组中同一个元素在答案里不能重复出现。
+
+你可以按任意顺序返回答案。
+
+```js
+// 不一定有顺序, 使用map去保存
+var twoSum = function (nums, target) {
+  let map = new Map();
+  for (let i = 0; i < nums.length; i++) {
+    if (map.has(target - nums[i])) {
+      return [map.get(target - nums[i]), i];
+    } else {
+      map.set(nums[i], i);
+    }
+  }
+  return [];
+};
+```
+
+#### 4、合并区间
+
+以数组 intervals 表示若干个区间的集合，其中单个区间为 intervals[i] = [starti, endi] 。
+请你合并所有重叠的区间，并返回一个不重叠的区间数组，该数组需恰好覆盖输入中的所有区间。
+
+```js
+var merge = function (intervals) {
+  const len = intervals.length;
+  if (len <= 1) {
+    return intervals;
+  }
+  const res = [];
+  intervals.sort((a, b) => a[0] - b[0]); //先排序，这样按数组左边界排序
+  let prev = intervals[0];
+  for (let i = 1; i < len; i++) {
+    let cur = intervals[i];
+    if (prev[1] >= cur[0]) {
+      //前一个的右边界大于等于下一个的左边界
+      prev[1] = Math.max(prev[1], cur[1]);
+    } else {
+      //两个数组没有重叠，就推到结果数组中
+      res.push(prev);
+      prev = cur;
+    }
+  }
+  res.push(prev); //最后要再加一次，因为最后一个肯定没有放进去
+  return res;
+};
+```
+
+#### 5、数组中的逆序对
+
+在数组中的两个数字，如果前面一个数字大于后面的数字，则这两个数字组成一个逆序对。输入一个数组，求出这个数组中的逆序对的总数。
+
+```js
+// 归并，俩俩比较，然后44比较
+var reversePairs = function (nums) {
+  // 归并排序
+  let sum = 0;
+  mergeSort(nums);
+  return sum;
+
+  function mergeSort(nums) {
+    if (nums.length < 2) return nums;
+    let mid = (0 + nums.length - 1) >> 1;
+    let left = nums.slice(0, mid + 1); // 递归左边数组
+    let right = nums.slice(mid + 1); // 递归右边数组
+    return merge(mergeSort(left), mergeSort(right));
+  }
+
+  function merge(left, right) {
+    //合并左右数组
+    let res = [];
+    let leftLen = left.length;
+    let rightLen = right.length;
+    let len = leftLen + rightLen;
+    for (let index = 0, i = 0, j = 0; index < len; index++) {
+      if (i >= leftLen) res[index] = right[j++];
+      else if (j >= rightLen) res[index] = left[i++];
+      else if (left[i] <= right[j]) res[index] = left[i++];
+      else {
+        res[index] = right[j++]; //左边的值大于右边的，左边值后面的数都大于右边的数
+        sum += leftLen - i; //在归并排序中唯一加的一行代码
+      }
+    }
+    return res;
+  }
+};
+```
+
+#### 6、数据流中的中位数
+
+如何得到一个数据流中的中位数？如果从数据流中读出奇数个数值，那么中位数就是所有数值排序之后位于中间的数值。如果从数据流中读出偶数个数值，那么中位数就是所有数值排序之后中间两个数的平均值。
+
+例如，
+
+[2,3,4]  的中位数是 3
+
+[2,3] 的中位数是 (2 + 3) / 2 = 2.5
+
+设计一个支持以下两种操作的数据结构：
+
+void addNum(int num) - 从数据流中添加一个整数到数据结构中。
+double findMedian() - 返回目前所有元素的中位数。
+
+```js
+/**
+ * initialize your data structure here.
+ */
+var MedianFinder = function () {
+  // 维护2个优先队列
+  // 小数放左边最大优先队列
+  this.maxPriorityQueue = new MaxPriorityQueue({
+    compare: (e1, e2) => e2 - e1,
+  });
+  // 大数放右边最小优先队列
+  this.minPriorityQueue = new MinPriorityQueue({
+    compare: (e1, e2) => e1 - e2,
+  });
+};
+
+/**
+ * @param {number} num
+ * @return {void}
+ */
+MedianFinder.prototype.addNum = function (num) {
+  // 如果最大优先队列为空，直接进队
+  if (this.maxPriorityQueue.isEmpty()) {
+    this.maxPriorityQueue.enqueue(num);
+  } else {
+    const value1 = this.maxPriorityQueue.front();
+    const value2 = this.minPriorityQueue.front();
+    if (num <= value1 || (num > value1 && num < value2)) {
+      this.maxPriorityQueue.enqueue(num);
+      // 调整队列
+      if (this.maxPriorityQueue.size() - this.minPriorityQueue.size() > 1) {
+        this.minPriorityQueue.enqueue(this.maxPriorityQueue.dequeue());
+      }
+    } else {
+      this.minPriorityQueue.enqueue(num);
+      if (this.minPriorityQueue.size() - this.maxPriorityQueue.size() > 1) {
+        this.maxPriorityQueue.enqueue(this.minPriorityQueue.dequeue());
+      }
+    }
+  }
+};
+
+/**
+ * @return {number}
+ */
+MedianFinder.prototype.findMedian = function () {
+  // 奇数
+  if (this.maxPriorityQueue.size() > this.minPriorityQueue.size()) {
+    return this.maxPriorityQueue.front();
+  } else if (this.maxPriorityQueue.size() < this.minPriorityQueue.size()) {
+    return this.minPriorityQueue.front();
+  }
+  // 偶数
+  const value1 = this.maxPriorityQueue.front();
+  const value2 = this.minPriorityQueue.front();
+  return (value1 + value2) / 2;
+};
+
+// 第二种: 排序
+/**
+ * initialize your data structure here.
+ */
+var MedianFinder = function () {
+  this.queue = [];
+};
+
+/**
+ * @param {number} num
+ * @return {void}
+ */
+const getIndex = (arr, left, right, num) => {
+  for (let i = 0; i < arr.length - 1; i++) {
+    if (num > arr[i] && num <= arr[i + 1]) {
+      return i + 1;
+    }
+  }
+  return -1;
+};
+
+MedianFinder.prototype.addNum = function (num) {
+  if (this.queue.length === 0) {
+    this.queue.push(num);
+  } else {
+    if (num <= this.queue[0]) {
+      this.queue.unshift(num);
+    } else if (num >= this.queue[this.queue.length - 1]) {
+      this.queue.push(num);
+    } else {
+      let index = getIndex(this.queue, 0, this.queue.length - 1, num);
+      for (let i = this.queue.length - 1; i >= index; i--) {
+        this.queue[i + 1] = this.queue[i];
+      }
+      this.queue[index] = num;
+    }
+  }
+};
+
+/**
+ * @return {number}
+ */
+MedianFinder.prototype.findMedian = function () {
+  let mid = Math.floor((this.queue.length - 1) / 2);
+  if (this.queue.length % 2 === 0) {
+    return (this.queue[mid] + this.queue[mid + 1]) / 2;
+  } else {
+    return this.queue[mid];
+  }
+};
+
+/**
+ * Your MedianFinder object will be instantiated and called as such:
+ * var obj = new MedianFinder()
+ * obj.addNum(num)
+ * var param_2 = obj.findMedian()
+ */
+```
+
+#### 计算右侧小于当前元素的个数
+
+给你一个整数数组 nums ，按要求返回一个新数组  counts 。数组 counts 有该性质： counts[i] 的值是   nums[i] 右侧小于  nums[i] 的元素的数量。
+
+### 二分查找
+
+#### 3、在排序数组中查找元素的第一个和最后一个位置
+
+给定一个按照升序排列的整数数组 nums，和一个目标值 target。找出给定目标值在数组中的开始位置和结束位置。
+
+如果数组中不存在目标值 target，返回  [-1, -1]。
+
+```js
+// 双指针的方式，走过 n/2, 时间复杂度还是O(n)
+var searchRange = function (nums, target) {
+  let len = nums.length;
+  if (len < 1 || target < nums[0] || nums[len - 1] < target) {
+    return [-1, -1];
+  }
+  let left = 0;
+  let right = len - 1;
+  while (left <= right) {
+    if (nums[left] === target && nums[right] === target) {
+      return [left, right];
+    }
+    if (nums[left] > target || nums[right] < target) {
+      return [-1, -1];
+    }
+    if (nums[left] < target) {
+      left++;
+    }
+    if (nums[right] > target) {
+      right--;
+    }
+  }
+  return [-1, -1];
+};
+
+// 二分查找
+var searchRange = function (nums, target) {
+  let l = 0,
+    r = nums.length - 1,
+    lr,
+    rl;
+  // 先找到目标值有没有
+  while (l <= r) {
+    let mid = l + ((r - l) >> 1);
+    if (target === nums[mid]) {
+      lr = rl = mid; // 先找到目标值索引
+      break;
+    }
+    if (target > nums[mid]) l = mid + 1;
+    else r = mid - 1;
+  }
+  // 如果没有直接返回-1
+  if (lr === undefined) return [-1, -1];
+
+  (l = 0), (r = nums.length - 1);
+  // 向前搜索，往下取整,第一个值
+  while (l < lr) {
+    let mid = l + ((lr - l) >> 1);
+    if (nums[mid] === target) lr = mid;
+    else l = mid + 1;
+  }
+  // // 向后搜索，往上取整
+  while (rl < r) {
+    let mid = rl + Math.ceil((r - rl) / 2);
+    if (nums[mid] === target) rl = mid;
+    else r = mid - 1;
+  }
+  return [lr, rl];
+};
+```
+
+#### 4、搜索旋转排序数组
+
+整数数组 nums 按升序排列，数组中的值 互不相同 。
+
+在传递给函数之前，nums 在预先未知的某个下标 k（0 <= k < nums.length）上进行了 旋转，使数组变为 [nums[k], nums[k+1], ..., nums[n-1], nums[0], nums[1], ..., nums[k-1]]（下标 从 0 开始 计数）。例如， [0,1,2,4,5,6,7] 在下标 3 处经旋转后可能变为  [4,5,6,7,0,1,2] 。
+
+给你 旋转后 的数组 nums 和一个整数 target ，如果 nums 中存在这个目标值 target ，则返回它的下标，否则返回  -1 。
+
+```js
+// 第一种方式递归
+var search = function (nums, target) {
+  const len = nums.length;
+  if (len < 1) {
+    return -1;
+  }
+  if (len === 1) {
+    return nums[0] === target ? 0 : -1;
+  }
+  const find = (left, right) => {
+    //先找中间的值，相等就返回，不相等就递归找前后的内容
+    if (left >= right) {
+      return nums[left] === target ? left : -1;
+    }
+    let mid = left + ((right - left) >> 1);
+    if (nums[mid] === target) {
+      return mid;
+    }
+    let leftIndex = find(left, mid - 1);
+    if (leftIndex !== -1) {
+      return leftIndex;
+    }
+    return find(mid + 1, right);
+  };
+  return find(0, len - 1);
+};
+
+// 第二种方式
+var search = function (nums, target) {
+  let len = nums.length;
+  if (len < 1) {
+    return -1;
+  }
+  if (len === 1) {
+    return nums[0] === target ? 0 : -1;
+  }
+  let start = 0;
+  let end = nums.length - 1;
+
+  while (start <= end) {
+    const mid = start + ((end - start) >> 1);
+    if (nums[mid] === target) return mid;
+    // [start, mid]有序
+    if (nums[mid] >= nums[start]) {
+      //target 在 [start, mid] 之间
+      if (target >= nums[start] && target <= nums[mid]) {
+        end = mid - 1;
+      } else {
+        start = mid + 1;
+      }
+    } else {
+      // [mid, end]有序
+      if (target >= nums[mid] && target <= nums[end]) {
+        start = mid + 1;
+      } else {
+        end = mid - 1;
+      }
+    }
+  }
+  return -1;
+};
+```
+
+### 位运算
+
+#### 1. 整数反转
+
+给你一个 32 位的有符号整数 x ，返回将 x 中的数字部分反转后的结果。
+
+如果反转后整数超过 32 位的有符号整数的范围  [−231,  231 − 1] ，就返回 0。
+
+假设环境不允许存储 64 位整数（有符号或无符号）。
+
+```js
+// 固定API完成
+var reverse = function (x) {
+  let flag = x >= 0 ? true : false; //记录是正数还是负数
+  let s = Math.abs(x).toString(); //只讲数字转为字符串
+  let reverseS = s.split("").reverse().join(""); //反转
+  let MAX_VALUE = Math.pow(2, 31) - 1;
+  let MIN_VALUE = Math.pow(-2, 31);
+  let num = flag ? +reverseS : -reverseS;
+  return num > MAX_VALUE || num < MIN_VALUE ? 0 : num;
+};
+
+// 每次 / % 比较
+var reverse = function (x) {
+  let res = 0;
+  let MAX_VALUE = Math.pow(2, 31) - 1;
+  let MIN_VALUE = Math.pow(-2, 31);
+  while (x) {
+    res = res * 10 + (x % 10);
+    if (res > MAX_VALUE || res < MIN_VALUE) {
+      return 0;
+    }
+    x = ~~(x / 10); // ~x = -(x+1), ~~x = -(-(x+1)+1) = x
+  }
+  return res;
+};
+```
+
+### 双指针
+
+#### 1、盛最多水的容器 https://leetcode.cn/problems/container-with-most-water/
+
+给定一个长度为 n 的整数数组  height 。有  n  条垂线，第 i 条线的两个端点是  (i, 0)  和  (i, height[i]) 。
+
+找出其中的两条线，使得它们与  x  轴共同构成的容器可以容纳最多的水。
+
+返回容器可以储存的最大水量。
+
+说明：你不能倾斜容器。
+
+```js
+var maxArea = function (height) {
+  let len = height.length;
+  // 确定边界
+  if (len <= 1) {
+    return 0;
+  }
+  let max = 0; //保存最大的区域值
+  // 使用双指针的形式，两边开始向中间走
+  for (let i = 0, j = len - 1; i < j; ) {
+    //i，j较小的那个先向内移动 如果高的指针先移动，那肯定不如当前的面积大
+    const minHeight = height[i] < height[j] ? height[i++] : height[j--];
+    const area = (j - i + 1) * minHeight;
+    max = Math.max(area, max);
+  }
+  return max;
+};
+```
+
+### 数学运算
+
+#### 1、整数转罗马数字
+
+罗马数字包含以下七种字符： I， V， X， L，C，D  和  M。
+
+```js
+字符          数值
+I             1
+V             5
+X             10
+L             50
+C             100
+D             500
+M             1000
+```
+
+例如， 罗马数字 2 写做  II ，即为两个并列的 1。12 写做  XII ，即为  X + II 。 27 写做   XXVII, 即为  XX + V + II 。
+
+通常情况下，罗马数字中小的数字在大的数字的右边。但也存在特例，例如 4 不写做  IIII，而是  IV。数字 1 在数字 5 的左边，所表示的数等于大数 5 减小数 1 得到的数值 4 。同样地，数字 9 表示为  IX。这个特殊的规则只适用于以下六种情况：
+
+I  可以放在  V (5) 和  X (10) 的左边，来表示 4 和 9。
+X  可以放在  L (50) 和  C (100) 的左边，来表示 40 和  90。 
+C  可以放在  D (500) 和  M (1000) 的左边，来表示  400 和  900。
+给你一个整数，将其转为罗马数字。
+
+```js
+var intToRoman = function (num) {
+  if (num < 1) {
+    return "";
+  }
+  // 先记录所有的可能性
+  const valueSymbols = [
+    [1000, "M"],
+    [900, "CM"],
+    [500, "D"],
+    [400, "CD"],
+    [100, "C"],
+    [90, "XC"],
+    [50, "L"],
+    [40, "XL"],
+    [10, "X"],
+    [9, "IX"],
+    [5, "V"],
+    [4, "IV"],
+    [1, "I"],
+  ];
+  const res = [];
+  for (const [key, value] of valueSymbols) {
+    while (num >= key) {
+      num -= key;
+      res.push(value);
+    }
+    if (num === 0) {
+      break;
+    }
+  }
+  return res.join("");
+};
+```
+
+#### 2、罗马数字转整数
+
+```js
+var romanToInt = function (s) {
+  const len = s.length;
+  if (len < 1) {
+    return 0;
+  }
+  // 保留所有的字母的值
+  const map = {
+    M: 1000,
+    D: 500,
+    C: 100,
+    L: 50,
+    X: 10,
+    V: 5,
+    I: 1,
+  };
+  let res = 0;
+  for (let i = 0; i < len; i++) {
+    const value = map[s[i]];
+    // 如果后面的数比前一个大，说明要么是4，要么是9，需要后面的那个减去前面的这个值「先减后加是一样的」
+    if (i < len - 1 && value < map[s[i + 1]]) {
+      res -= value;
+    } else {
+      res += value;
+    }
+  }
+  return res;
 };
 ```
