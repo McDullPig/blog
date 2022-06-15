@@ -2,6 +2,70 @@
 
 ### 1、数组
 
+#### 1、有序数组的平方
+
+给你一个按非递减顺序排序的整数数组 nums，返回 每个数字的平方 组成的新数组，要求也按 非递减顺序 排序。
+
+```js
+var sortedSquares = function (nums) {
+  const len = nums.length;
+  if (len < 1) {
+    return [];
+  }
+  let res = nums.map((item) => {
+    return item * item;
+  });
+  return res.sort((a, b) => a - b);
+};
+```
+
+#### 2、轮转数组
+
+给你一个数组，将数组中的元素向右轮转 k 个位置，其中 k 是非负数。
+
+```js
+// 1、在数组后面拿出一个，放在数组的最前面，unshift的时间复杂度应该是o(n)
+var rotate = function (nums, k) {
+  let len = nums.length;
+  if (len < 1 || k <= 0) {
+    return;
+  }
+  if (k > len) {
+    k = k % len;
+  }
+  for (let i = 1; i <= k; i++) {
+    nums.unshift(nums.pop());
+  }
+};
+
+// 2、先翻转，然后分别去翻转
+/**
+ * @param {number[]} nums
+ * @param {number} k
+ * @return {void} Do not return anything, modify nums in-place instead.
+ */
+var rotate = function (nums, k) {
+  let len = nums.length;
+  if (len < 1 || k <= 0) {
+    return;
+  }
+  if (k > len) {
+    k = k % len;
+  }
+  nums = nums.reverse();
+  reverse(nums, 0, k - 1);
+  reverse(nums, k, len - 1);
+};
+
+function reverse(nums, left, right) {
+  while (left < right) {
+    [nums[left], nums[right]] = [nums[right], nums[left]];
+    left++;
+    right--;
+  }
+}
+```
+
 ### 2、二分查找
 
 #### 1、二分查找
