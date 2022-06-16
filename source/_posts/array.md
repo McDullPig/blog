@@ -66,6 +66,85 @@ function reverse(nums, left, right) {
 }
 ```
 
+#### 3、移动零
+
+给定一个数组 nums，编写一个函数将所有 0 移动到数组的末尾，同时保持非零元素的相对顺序。
+
+请注意，必须在不复制数组的情况下原地对数组进行操作。
+
+```js
+// 保证稳定性，也要在一个数组中进行交换，使用双指针，都从左向右，
+var moveZeroes = function (nums) {
+  const len = nums.length;
+  if (len < 1) {
+    return nums;
+  }
+  let left = 0;
+  let right = 0;
+  while (right < len) {
+    if (nums[right] !== 0) {
+      [nums[left], nums[right]] = [nums[right], nums[left]];
+      left++;
+    }
+    right++;
+  }
+};
+```
+
+#### 4-1、两数之和
+
+给定一个整数数组 nums  和一个整数目标值 target，请你在该数组中找出 和为目标值 target  的那两个整数，并返回它们的数组下标。
+
+你可以假设每种输入只会对应一个答案。但是，数组中同一个元素在答案里不能重复出现。
+
+你可以按任意顺序返回答案。
+
+```js
+// 不一定有顺序, 使用map去保存
+var twoSum = function (nums, target) {
+  let map = new Map();
+  for (let i = 0; i < nums.length; i++) {
+    if (map.has(target - nums[i])) {
+      return [map.get(target - nums[i]), i];
+    } else {
+      map.set(nums[i], i);
+    }
+  }
+  return [];
+};
+```
+
+#### 4-2、两数之和 II - 输入有序数组
+
+给你一个下标从 1 开始的整数数组  numbers ，该数组已按 非递减顺序排列   ，请你从数组中找出满足相加之和等于目标数  target 的两个数。如果设这两个数分别是 numbers[index1] 和 numbers[index2] ，则 1 <= index1 < index2 <= numbers.length 。
+
+以长度为 2 的整数数组 [index1, index2] 的形式返回这两个整数的下标 index1 和 index2。
+
+你可以假设每个输入 只对应唯一的答案 ，而且你 不可以 重复使用相同的元素。
+
+你所设计的解决方案必须只使用常量级的额外空间。
+
+```js
+var twoSum = function (numbers, target) {
+  let len = numbers.length;
+  if (len < 2 && numbers[0] > target) {
+    return [];
+  }
+  let left = 0;
+  let right = len - 1;
+  while (left < right) {
+    if (numbers[left] + numbers[right] < target) {
+      left++;
+    } else if (numbers[left] + numbers[right] > target) {
+      right--;
+    } else {
+      return [left + 1, right + 1];
+    }
+  }
+  return [];
+};
+```
+
 ### 2、二分查找
 
 #### 1、二分查找
@@ -1528,29 +1607,6 @@ var sortColors = function (nums) {
       i++;
     }
   }
-};
-```
-
-#### 3、两数之和
-
-给定一个整数数组 nums  和一个整数目标值 target，请你在该数组中找出 和为目标值 target  的那   两个   整数，并返回它们的数组下标。
-
-你可以假设每种输入只会对应一个答案。但是，数组中同一个元素在答案里不能重复出现。
-
-你可以按任意顺序返回答案。
-
-```js
-// 不一定有顺序, 使用map去保存
-var twoSum = function (nums, target) {
-  let map = new Map();
-  for (let i = 0; i < nums.length; i++) {
-    if (map.has(target - nums[i])) {
-      return [map.get(target - nums[i]), i];
-    } else {
-      map.set(nums[i], i);
-    }
-  }
-  return [];
 };
 ```
 
