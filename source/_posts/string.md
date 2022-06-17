@@ -33,6 +33,13 @@ var replaceSpace = function (s) {
   let array = s.split(" ");
   return array.join("%20");
 };
+// 正则表达式
+var replaceSpace = function (s) {
+  if (s.length < 1) {
+    return "";
+  }
+  return s.replace(/\s/g, "%20");
+};
 ```
 
 #### 2. 第一个只出现一次的字符
@@ -330,5 +337,308 @@ var lengthOfLongestSubstring = function (s) {
     map.set(s[fast], fast); //放到map中
   }
   return max;
+};
+
+// 第二种：用数组去做
+var lengthOfLongestSubstring = function (s) {
+  const len = s.length;
+  if (len <= 1) {
+    return len;
+  }
+  let count = 0;
+  let arr = [];
+  for (let i = 0; i < len; i++) {
+    if (!arr.includes(s[i])) {
+      arr.push(s[i]);
+      count = Math.max(count, arr.length);
+    } else {
+      while (arr[0] !== s[i]) {
+        arr.shift();
+      }
+      arr.push(arr.shift());
+    }
+  }
+  return count;
+};
+```
+
+#### 9. 反转字符串
+
+编写一个函数，其作用是将输入的字符串反转过来。输入字符串以字符数组 s 的形式给出。
+
+不要给另外的数组分配额外的空间，你必须原地修改输入数组、使用 O(1) 的额外空间解决这一问题。
+
+```js
+// 双指针
+var reverseString = function (s) {
+  let len = s.length;
+  if (len <= 1) {
+    return;
+  }
+  let left = 0;
+  let right = len - 1;
+  while (left < right) {
+    [s[left], s[right]] = [s[right], s[left]];
+    left++;
+    right--;
+  }
+};
+```
+
+#### 9-1. 反转字符串中的单词 III
+
+给定一个字符串 s ，你需要反转字符串中每个单词的字符顺序，同时仍保留空格和单词的初始顺序。
+
+```js
+//输入：s = "Let's take LeetCode contest"
+//输出："s'teL ekat edoCteeL tsetnoc"
+var reverseWords = function (s) {
+  if (s.trim() === "") {
+    return s;
+  }
+  let arr = reverse(s); //先整体反转
+  return arr.split(" ").reverse().join(" "); //然后按单词拆分数组，再反转拼接
+};
+
+var reverse = function (s) {
+  if (s.trim() === "") {
+    return s;
+  }
+  let arr = s.split("");
+  let left = 0;
+  let right = arr.length - 1;
+  while (left < right) {
+    [arr[left], arr[right]] = [arr[right], arr[left]];
+    left++;
+    right--;
+  }
+  return arr.join("");
+};
+
+// 第二种：简洁的方式
+var reverseWords = function (s) {
+  if (s.trim() === "") {
+    return s;
+  }
+  // 字符串按空格进行分隔, 每一个单词作为数组一个值
+  return s
+    .split(" ")
+    .map((item) => item.split("").reverse().join(""))
+    .join(" ");
+};
+```
+
+#### 10. 回文数
+
+给你一个整数 x ，如果 x 是一个回文整数，返回 true ；否则，返回 false
+
+回文数是指正序（从左向右）和倒序（从右向左）读都是一样的整数。
+
+```js
+var isPalindrome = function (x) {
+  if (x < 0) {
+    return false;
+  }
+  let s = x.toString();
+  let left = 0;
+  let right = s.length - 1;
+  while (left < right) {
+    if (s[left] !== s[right]) {
+      return false;
+    }
+    left++;
+    right--;
+  }
+  return true;
+};
+```
+
+#### 11. 复原 IP 地址
+
+有效 IP 地址 正好由四个整数（每个整数位于 0 到 255 之间组成，且不能含有前导 0），整数之间用 '.' 分隔。
+
+例如："0.1.2.201" 和 "192.168.1.1" 是 有效 IP 地址，但是 "0.011.255.245"、"192.168.1.312" 和 "192.168@1.1" 是 无效 IP 地址。
+给定一个只包含数字的字符串 s ，用以表示一个 IP 地址，返回所有可能的有效 IP 地址，这些地址可以通过在 s 中插入  '.' 来形成。
+你不能重新排序或删除 s 中的任何数字。你可以按任何顺序返回答案。
+
+```js
+// 回溯，一般就是dfs
+var restoreIpAddresses = function (s) {
+  let res = [];
+  const len = s.length;
+  if (len < 4) {
+    return res;
+  }
+  let segArray = new Array(4); // 存IP地址的
+  const dfs = (s, segId, segStart) => {
+    // 刚好4段，且长度为字符串的长度就加入数组，返回
+    if (segId === 4) {
+      if (segStart === len) {
+        res.push(segArray.join("."));
+      }
+      return;
+    }
+    // 如果还没有找到 4 段 IP 地址就已经遍历完了字符串，那么提前回溯
+    if (segStart === s.length) {
+      return;
+    }
+    // 没有达到4段，但是当前的数字是0，需要额外判断
+    if (s[segStart] === "0") {
+      segArray[segId] = 0;
+      dfs(s, segId + 1, segStart + 1);
+    }
+    let val = 0;
+    for (let i = segStart; i < len; i++) {
+      val = val * 10 + +s[i];
+      // 当前存的值一定是大于0 ，小于255的
+      if (val > 0 && val <= 255) {
+        segArray[segId] = val;
+        dfs(s, segId + 1, i + 1);
+      } else {
+        break;
+      }
+    }
+  };
+  dfs(s, 0, 0);
+  return res;
+};
+```
+
+#### 12. 最长回文子串
+
+给你一个字符串 s，找到 s 中最长的回文子串。
+
+```js
+// 1、中心扩展：以一个字符为中心，先向左右找到相同的字符，因为无论单数还是双数的相同字符都是回文，在对比边界以内相同的字符
+// 这个比较耗时
+var longestPalindrome = function (s) {
+  const len = s.length;
+  if (len <= 1) {
+    return s;
+  }
+  let max = 0; //当期最大回文串的长度
+  let maxStr = ""; //当前最大的回文串
+  for (let i = 0; i < len; i++) {
+    let str = s[i]; //当前作为回文串的中心
+    let l = i - 1;
+    let r = i + 1; // 右侧遍历开始索引
+    while (s[r] === s[i]) {
+      //找到当前字符后连接的所有一样的字符,获取连续的字符
+      str += s[r];
+      r++;
+    }
+    while (s[l] === s[i]) {
+      //找到当前字符前连接的所有一样的字符,获取连续的字符
+      str += s[l];
+      l--;
+    }
+    while (l >= 0 && r < len && s[l] === s[r] && s[l] !== undefined) {
+      // 从连续字符两端开始像两侧扩展,直到越界或者不一致,一致的直接拼到 str 中
+      str = s[l] + str + s[r];
+      l--;
+      r++;
+    }
+    if (str.length > max) {
+      //判断和之前最大的比较
+      max = str.length;
+      maxStr = str;
+    }
+  }
+  return maxStr;
+};
+```
+
+```js
+// 使用了快慢指针的思想 + 中心扩展
+var longestPalindrome = function (s) {
+  let max = 0; // 当前最大回文串的长度
+  let start = -1; // 当前最大回文串的起始索引
+  const l = s.length; // s 的长度
+  for (let i = 0; i < l; i++) {
+    // 遍历 s
+    let now = 1; // 当前回文串的长度
+    let l = i - 1; // 左侧开始遍历的指针
+    while (s[i + 1] === s[i]) {
+      // 如果当前字符后边的字符都一样, 当前长度 + 1,  s遍历指针向后推
+      now++;
+      i++;
+    }
+    let r = i + 1; // 获取右侧开始遍历的指针
+    while (s[l] === s[r] && s[l] !== undefined) {
+      // 从连续字符两端开始像两侧扩展,直到越界或者不一致,一致的直接累积到当前长度中,修改左右指针
+      now += 2;
+      l--;
+      r++;
+    }
+    if (now > max) {
+      // 判断与之前最大的对比,更新当前最大回文串的起始索引
+      max = now;
+      start = l + 1;
+    }
+  }
+  return s.slice(start, start + max); // 通过最大长度和起始索引,获取需要的字符串
+};
+```
+
+#### 13. Z 字形变换
+
+将一个给定字符串 s 根据给定的行数 numRows ，以从上往下、从左到右进行  Z 字形排列。
+
+比如输入字符串为 "PAYPALISHIRING"  行数为 3 时，排列如下：
+
+```js
+P   A   H   N
+A P L S I I G
+Y   I   R
+```
+
+之后，你的输出需要从左往右逐行读取，产生出一个新的字符串，比如："PAHNAPLSIIGYIR"。
+
+```js
+var convert = function (s, numRows) {
+  // 如果只有一行，或者s的长度没有长过行数「只有一列」，就直接返回s即可
+  if (numRows === 1 || s.length <= numRows) {
+    return s;
+  }
+  let arr = new Array(numRows).fill(""); //不需要二维数组，用一维数组，每个值都是字符串
+  let index = 0;
+  let down = false; //等于false，因为下面for循环中index ===0,改了方向
+  for (let val of s) {
+    arr[index] += val;
+    if (index === 0 || index === numRows - 1) {
+      down = !down;
+    }
+    index += down ? 1 : -1; //每次向下走一个，或者向上走一个
+  }
+  return arr.join("");
+};
+```
+
+#### 14. 最长公共前缀
+
+编写一个函数来查找字符串数组中的最长公共前缀。
+
+如果不存在公共前缀，返回空字符串 ""。
+
+```js
+var longestCommonPrefix = function (strs) {
+  const len = strs.length;
+  if (len < 1) {
+    return "";
+  }
+  if (len === 1) {
+    return strs[0];
+  }
+  let res = strs[0];
+  for (let i = 1; i < len; i++) {
+    let j = 0; //为啥要放在外面呢，因为需要在跳出来for循环之后才能截取,例如res =ab, strs[i] =a
+    for (; j < res.length && j < strs[i].length; j++) {
+      if (res[j] !== strs[i][j]) {
+        break;
+      }
+    }
+    res = res.substr(0, j);
+  }
+  return res;
 };
 ```
