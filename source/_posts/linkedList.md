@@ -1,8 +1,6 @@
-#### 1. 删除链表中的节点:`避免节点断链`
+#### 1-1. 删除链表中的节点:`避免节点断链`
 
-给定单向链表的头指针和一个要删除的节点的值，定义一个函数删除该节点。
-
-返回删除后的链表的头节点。
+给你一个链表的头节点 head 和一个整数 val ，请你删除链表中所有满足 Node.val == val 的节点，并返回 新的头节点 。
 
 ```js
 /**
@@ -10,39 +8,53 @@
  * @param {number} val
  * @return {ListNode}
  */
-//不带头链表
-var deleteNode = function (head, val) {
-  if (head === null) {
+var removeElements = function (head, val) {
+  if (!head) {
     return head;
   }
-  if (head.val === val) {
+  let newNode = new ListNode(-1);
+  newNode.next = head;
+  let pre = newNode;
+  while (pre && pre.next) {
+    if (pre.next.val !== val) {
+      pre = pre.next;
+    } else {
+      pre.next = pre.next.next;
+    }
+  }
+  return newNode.next;
+};
+```
+
+#### 1-2. 删除链表的倒数第 N 个结点
+
+给你一个链表，删除链表的倒数第 n 个结点，并且返回链表的头结点
+
+```js
+var removeNthFromEnd = function (head, n) {
+  if (!head || n < 1) {
+    return head;
+  }
+  let slow = head,
+    fast = head;
+  // 先让 fast 往后移 n 位
+  while (n--) {
+    fast = fast.next;
+  }
+
+  // 如果 n 和 链表中总结点个数相同，即要删除的是链表头结点时，fast 经过上一步已经到外面了
+  if (!fast) {
     return head.next;
   }
-  let p = head;
-  while (p.next !== null) {
-    if (p.next.val === val) {
-      p.next = p.next.next;
-      return head;
-    } else {
-      p = p.next;
-    }
-  }
-  return head;
-};
-//带头链表
-var deleteNode = function (head, val) {
-  let pre = new ListNode(-1); // 哨兵节点
-  pre.next = head;
 
-  let node = pre;
-  while (node.next) {
-    if (node.next.val === val) {
-      node.next = node.next.next;
-      break;
-    }
-    node = node.next;
+  // 然后 快慢指针 一起往后遍历，当 fast 是链表最后一个结点时，此时 slow 下一个就是要删除的结点
+  while (fast.next) {
+    slow = slow.next;
+    fast = fast.next;
   }
-  return pre.next;
+  slow.next = slow.next.next;
+
+  return head;
 };
 ```
 
@@ -412,6 +424,179 @@ var detectCycle = function (head) {
   slow = head;
   while (slow !== fast) {
     fast = fast.next;
+    slow = slow.next;
+  }
+  return slow;
+};
+```
+
+#### 11. 回文链表
+
+给你一个单链表的头节点 head ，请你判断该链表是否为回文链表。如果是，返回 true ；否则，返回 false 。
+
+```js
+// 1、可以使用数组保存值，然后使用双指针的方式去判断是否回文
+
+// 2、快慢指针
+var isPalindrome = function (head) {
+  if (!head || !head.next) {
+    return true;
+  }
+  let slow = head;
+  let fast = head;
+  // 找到前半部分链表的尾节点
+  while (fast.next && fast.next.next) {
+    fast = fast.next.next;
+    slow = slow.next;
+  }
+  // 反转后半部分链表
+  let node = slow.next;
+  slow.next = null;
+  while (node) {
+    let q = node.next;
+    node.next = slow;
+    slow = node;
+    node = q;
+  }
+  // 判断是否回文
+  fast = head;
+  while (fast) {
+    if (slow.val !== fast.val) {
+      return false;
+    }
+    slow = slow.next;
+    fast = fast.next;
+  }
+  return true;
+};
+```
+
+#### 12. 奇偶链表
+
+给定单链表的头节点 head ，将所有索引为奇数的节点和索引为偶数的节点分别组合在一起，然后返回重新排序的列表。
+
+第一个节点的索引被认为是奇数 ， 第二个节点的索引为偶数 ，以此类推。
+
+请注意，偶数组和奇数组内部的相对顺序应该与输入时保持一致。
+
+必须在 O(1) 的额外空间复杂度和 O(n) 的时间复杂度下解决这个问题。
+
+```js
+var oddEvenList = function (head) {
+  if (!head || !head.next) {
+    return head;
+  }
+  let odd = head;
+  let even = head.next;
+  let o = odd;
+  let e = even;
+  while (e !== null && e.next !== null) {
+    o.next = e.next;
+    o = o.next;
+    e.next = o.next;
+    e = e.next;
+  }
+  o.next = even;
+  return odd;
+};
+```
+
+#### 13. 合并 K 个升序链表
+
+给你一个链表数组，每个链表都已经按升序排列。
+
+请你将所有链表合并到一个升序链表中，返回合并后的链表。
+
+```js
+// 使用归并排序+链表
+var mergeKLists = function (lists) {
+  if (lists.length <= 0) {
+    return null;
+  }
+  if (lists.length === 1) {
+    return lists[0];
+  }
+  return mergeList(lists, 0, lists.length - 1);
+};
+let merge = (left, right) => {
+  let node = new ListNode(-1);
+  let head = node;
+  while (left && right) {
+    if (left.val <= right.val) {
+      head.next = left;
+      left = left.next;
+    } else {
+      head.next = right;
+      right = right.next;
+    }
+    head = head.next;
+  }
+  head.next = left ? left : right;
+  return node.next;
+};
+let mergeList = (lists, left, right) => {
+  if (left >= right) {
+    return lists[left];
+  }
+  let mid = left + ((right - left) >> 1);
+  let leftArr = mergeList(lists, left, mid);
+  let rightArr = mergeList(lists, mid + 1, right);
+  return merge(leftArr, rightArr);
+};
+```
+
+#### 14. 两数相加
+
+给你两个非空的链表，表示两个非负的整数。它们每位数字都是按照逆序的方式存储的，并且每个节点只能存储一位数字。
+
+请你将两个数相加，并以相同形式返回一个表示和的链表。
+
+你可以假设除了数字 0 之外，这两个数都不会以 0  开头。
+
+```js
+var addTwoNumbers = function (l1, l2) {
+  if (!l1) {
+    return l2;
+  }
+  if (!l2) {
+    return l1;
+  }
+  let flag = 0; //记录进位
+  let l = new ListNode(-1); // 返回结果的头结点
+  let head = l;
+  while (l1 || l2) {
+    let value = (l1 ? l1.val : 0) + (l2 ? l2.val : 0) + flag; //有可能l1或l2为null
+    flag = Math.floor(value / 10); //进位
+    value = value % 10; //个数
+    let node = new ListNode(value);
+    head.next = node;
+    head = head.next;
+    l1 = l1 && l1.next;
+    l2 = l2 && l2.next;
+  }
+  if (flag !== 0) {
+    let node = new ListNode(flag);
+    head.next = node;
+  }
+  return l.next;
+};
+```
+
+#### 15. 链表的中间结点
+
+给定一个头结点为 head 的非空单链表，返回链表的中间结点。
+
+如果有两个中间结点，则返回第二个中间结点。
+
+```js
+var middleNode = function (head) {
+  if (!head || !head.next) {
+    return head;
+  }
+  let slow = head;
+  let fast = head;
+  while (fast && fast.next) {
+    fast = fast.next.next;
     slow = slow.next;
   }
   return slow;
