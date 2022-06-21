@@ -642,3 +642,43 @@ var longestCommonPrefix = function (strs) {
   return res;
 };
 ```
+
+#### 15. 字符串的排列
+
+给你两个字符串 s1  和  s2 ，写一个函数来判断 s2 是否包含 s1  的排列。如果是，返回 true ；否则，返回 false 。
+
+换句话说，s1 的排列之一是 s2 的子串。
+
+```
+输入：s1 = "ab" s2 = "eidbaooo"
+输出：true
+解释：s2 包含 s1 的排列之一 ("ba").
+```
+
+```js
+var checkInclusion = function (s1, s2) {
+  let len1 = s1.length;
+  let len2 = s2.length;
+  if (len1 > len2) {
+    return false;
+  }
+  const cnt = new Array(26).fill(0); //因为英文字母就26个，所以使用一个长度是26的数组保存
+  for (let i = 0; i < len1; i++) {
+    --cnt[s1[i].charCodeAt() - "a".charCodeAt()]; //将存在的值都转成-1
+  }
+  // s1中的字符减1，s2中的字符加1，如果s2中的字符连续加1以后的值等于s1的长度就返回true
+  let left = 0; // 计算一个起始值
+  for (let right = 0; right < len2; right++) {
+    const x = s2[right].charCodeAt() - "a".charCodeAt();
+    ++cnt[x];
+    while (cnt[x] > 0) {
+      --cnt[s2[left].charCodeAt() - "a".charCodeAt()];
+      ++left;
+    }
+    if (right - left + 1 === len1) {
+      return true;
+    }
+  }
+  return false;
+};
+```
