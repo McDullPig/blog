@@ -26,7 +26,7 @@ var removeElements = function (head, val) {
 };
 ```
 
-#### 1-2. 删除链表的倒数第 N 个结点
+#### 1-2. 删除链表的倒数第 N 个结点 「双指针」
 
 给你一个链表，删除链表的倒数第 n 个结点，并且返回链表的头结点
 
@@ -53,8 +53,58 @@ var removeNthFromEnd = function (head, n) {
     fast = fast.next;
   }
   slow.next = slow.next.next;
-
   return head;
+};
+```
+
+#### 1-3. 移除链表元素
+
+给你一个链表的头节点 head 和一个整数 val ，请你删除链表中所有满足 Node.val == val 的节点，并返回 新的头节点 。
+
+```js
+/**
+ * @param {ListNode} head
+ * @param {number} val
+ * @return {ListNode}
+ */
+var removeElements = function (head, val) {
+  if (!head || (head.val === val && !head.next)) {
+    return null;
+  }
+  let node = new ListNode(-1);
+  node.next = head;
+  let p = node;
+  while (p && p.next) {
+    if (p.next.val === val) {
+      p.next = p.next.next;
+    } else {
+      p = p.next;
+    }
+  }
+  return node.next;
+};
+```
+
+#### 1-4. 删除排序列表中的重复元素
+
+给定一个已排序的链表的头 head ， 删除所有重复的元素，使每个元素只出现一次 。返回 已排序的链表 。
+
+```js
+var deleteDuplicates = function (head) {
+  if (!head || !head.next) {
+    return head;
+  }
+  let node = new ListNode(-1);
+  let p = node;
+  p.next = head;
+  while (p.next && p.next.next) {
+    if (p.next.val === p.next.next.val) {
+      p.next = p.next.next;
+    } else {
+      p = p.next;
+    }
+  }
+  return node.next;
 };
 ```
 
@@ -376,7 +426,37 @@ var reverseBetween = function (head, left, right) {
 };
 ```
 
-#### 10.环形链表 2
+#### 10-1. 环形链表
+
+给你一个链表的头节点 head ，判断链表中是否有环。
+
+如果链表中有某个节点，可以通过连续跟踪 next 指针再次到达，则链表中存在环。 为了表示给定链表中的环，评测系统内部使用整数 pos 来表示链表尾连接到链表中的位置（索引从 0 开始）。注意：pos 不作为参数进行传递  。仅仅是为了标识链表的实际情况。
+
+如果链表中存在环  ，则返回 true 。 否则，返回 false 。
+
+```js
+/**
+ * @param {ListNode} head
+ * @return {boolean}
+ */
+var hasCycle = function (head) {
+  if (!head || !head.next) {
+    return false;
+  }
+  let slow = head;
+  let fast = head;
+  while (fast && fast.next) {
+    fast = fast.next.next;
+    slow = slow.next;
+    if (fast === slow) {
+      return true;
+    }
+  }
+  return false;
+};
+```
+
+#### 10-2.环形链表 2
 
 给定一个链表的头节点  head ，返回链表开始入环的第一个节点。  如果链表无环，则返回  null。
 
@@ -555,10 +635,10 @@ let mergeList = (lists, left, right) => {
 
 ```js
 var addTwoNumbers = function (l1, l2) {
-  if (!l1) {
+  if (!l1 || (!l1.next && l1.val === 0)) {
     return l2;
   }
-  if (!l2) {
+  if (!l2 || (!l2.next && l2.val === 0)) {
     return l1;
   }
   let flag = 0; //记录进位
@@ -582,7 +662,7 @@ var addTwoNumbers = function (l1, l2) {
 };
 ```
 
-#### 15. 链表的中间结点
+#### 15. 链表的中间结点 「双指针」
 
 给定一个头结点为 head 的非空单链表，返回链表的中间结点。
 
