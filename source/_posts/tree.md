@@ -30,7 +30,7 @@ var preorderTraversal = function (root) {
   dfs(root);
   return res;
 };
-// 非递归：中左右
+// 非递归：中左右 --> 使用栈应该是中右左进栈
 var preorderTraversal = function (root) {
   if (!root) {
     return [];
@@ -162,7 +162,7 @@ var postorderTraversal = function (root) {
   }
   return res;
 };
-// 非递归2: 先前序遍历，然后反转
+// 非递归2: 后序遍历应该是左右中，先前序遍历中右左，然后反转
 var postorderTraversal = function (root) {
   if (!root) {
     return [];
@@ -1132,6 +1132,36 @@ var connect = function (root) {
   }
   return root;
 };
+```
+
+#### 31. 对称二叉树
+
+给你一个二叉树的根节点 root ， 检查它是否轴对称。
+
+```js
+/**
+ * @param {TreeNode} root
+ * @return {boolean}
+ */
+var isSymmetric = function (root) {
+  if (!root) {
+    return true;
+  }
+  if ((root.left && !root.right) || (!root.left && root.right)) {
+    return false;
+  }
+  return sym(root.left, root.right);
+};
+
+function sym(left, right) {
+  if (!left && !right) {
+    return true;
+  }
+  if ((!left && right) || (left && !right) || left.val !== right.val) {
+    return false;
+  }
+  return sym(left.left, right.right) && sym(left.right, right.left);
+}
 ```
 
 #### 8、二叉树的镜像

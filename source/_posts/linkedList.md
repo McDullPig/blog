@@ -94,17 +94,15 @@ var deleteDuplicates = function (head) {
   if (!head || !head.next) {
     return head;
   }
-  let node = new ListNode(-1);
-  let p = node;
-  p.next = head;
-  while (p.next && p.next.next) {
-    if (p.next.val === p.next.next.val) {
-      p.next = p.next.next;
+  let node = head;
+  while (node && node.next) {
+    if (node.val === node.next.val) {
+      node.next = node.next.next;
     } else {
-      p = p.next;
+      node = node.next;
     }
   }
-  return node.next;
+  return head;
 };
 ```
 
