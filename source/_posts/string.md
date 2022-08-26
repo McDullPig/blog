@@ -42,7 +42,7 @@ var replaceSpace = function (s) {
 };
 ```
 
-#### 2. 第一个只出现一次的字符
+#### 2-1. 第一个只出现一次的字符
 
 在字符串 s 中找出第一个只出现一次的字符。如果没有，返回一个单空格。 s 只包含小写字母。
 
@@ -97,6 +97,24 @@ var firstUniqChar = function (s) {
     }
   }
   return q.length ? q[0][0] : " ";
+};
+```
+
+#### 2-2. 字符串中的第一个唯一字符下标
+
+给定一个字符串 s ，找到 它的第一个不重复的字符，并返回它的索引 。如果不存在，则返回 -1 。
+
+```js
+var firstUniqChar = function (s) {
+  if (s.length === 0) {
+    return -1;
+  }
+  for (let i = 0; i < s.length; i++) {
+    if (s.lastIndexOf(s[i]) === s.indexOf(s[i])) {
+      return i;
+    }
+  }
+  return -1;
 };
 ```
 
@@ -680,5 +698,63 @@ var checkInclusion = function (s1, s2) {
     }
   }
   return false;
+};
+```
+
+#### 16. 赎金信
+
+给你两个字符串：ransomNote 和 magazine ，判断 ransomNote 能不能由 magazine 里面的字符构成。
+
+如果可以，返回 true ；否则返回 false 。
+
+magazine 中的每个字符只能在 ransomNote 中使用一次。
+
+```js
+// 1、使用map去记录
+var canConstruct = function (ransomNote, magazine) {
+  if (ransomNote.length > magazine.length) {
+    return false;
+  }
+  let map = new Map();
+  // 先用map记录每个字符的个数
+  for (let x of magazine) {
+    if (map.has(x)) {
+      map.set(x, map.get(x) + 1);
+    } else {
+      map.set(x, 1);
+    }
+  }
+  for (let x of ransomNote) {
+    if (map.has(x) && map.get(x) !== 0) {
+      map.set(x, map.get(x) - 1);
+    } else {
+      return false;
+    }
+  }
+  return true;
+};
+// 2、都是字母，所以使用数组保存26个英文字母也可以
+/**
+ * @param {string} ransomNote
+ * @param {string} magazine
+ * @return {boolean}
+ */
+var canConstruct = function (ransomNote, magazine) {
+  if (ransomNote.length > magazine.length) {
+    return false;
+  }
+  let arr = new Array(26).fill(0);
+  // js中'b'-'a'的值是NaN
+  for (let x of magazine) {
+    let item = x.charCodeAt() - 97;
+    arr[item]++;
+  }
+  for (let x of ransomNote) {
+    let item = x.charCodeAt() - 97;
+    if (--arr[item] < 0) {
+      return false;
+    }
+  }
+  return true;
 };
 ```

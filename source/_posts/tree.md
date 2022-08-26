@@ -279,7 +279,35 @@ var kthLargest = function (root, k) {
 };
 ```
 
-#### 8、路径总和 2
+#### 8、路径总和 1
+
+给你二叉树的根节点 root 和一个表示目标和的整数  targetSum 。判断该树中是否存在根节点到叶子节点的路径，这条路径上所有节点值相加等于目标和 targetSum 。如果存在，返回 true ；否则，返回 false 。
+
+叶子节点 是指没有子节点的节点。
+
+```js
+/**
+ * @param {TreeNode} root
+ * @param {number} targetSum
+ * @return {boolean}
+ */
+var hasPathSum = function (root, targetSum) {
+  if (!root) return false;
+  let res = false;
+  const dfs = (root, sum) => {
+    if (!root) return;
+    if (sum == targetSum && !root.left && !root.right) {
+      res = true;
+    }
+    if (root.left) dfs(root.left, sum + root.left.val);
+    if (root.right) dfs(root.right, sum + root.right.val);
+  };
+  dfs(root, root.val);
+  return res;
+};
+```
+
+#### 8-2、路径总和 2
 
 给你二叉树的根节点 root 和一个整数目标和 targetSum ，找出所有 从根节点到叶子节点 路径总和等于给定目标和的路径。
 
@@ -1162,6 +1190,28 @@ function sym(left, right) {
   }
   return sym(left.left, right.right) && sym(left.right, right.left);
 }
+```
+
+#### 32、翻转二叉树
+
+给你一棵二叉树的根节点 root ，翻转这棵二叉树，并返回其根节点。
+
+```js
+/**
+ * @param {TreeNode} root
+ * @return {TreeNode}
+ */
+var invertTree = function (root) {
+  if (!root) {
+    return root;
+  }
+  let node = root.left;
+  root.left = root.right;
+  root.right = node;
+  invertTree(root.left);
+  invertTree(root.right);
+  return root;
+};
 ```
 
 #### 8、二叉树的镜像
