@@ -758,3 +758,34 @@ var canConstruct = function (ransomNote, magazine) {
   return true;
 };
 ```
+
+#### 17. 有效的字母异位词
+
+给定两个字符串 s 和 t ，编写一个函数来判断 t 是否是 s 的字母异位词。
+
+注意：若  s 和 t  中每个字符出现的次数都相同，则称  s 和 t  互为字母异位词。
+
+```js
+/**
+ * @param {string} s
+ * @param {string} t
+ * @return {boolean}
+ */
+var isAnagram = function (s, t) {
+  if (s.length !== t.length) {
+    return false;
+  }
+  let arr = new Array(26).fill(0);
+  for (let x of s) {
+    let index = x.charCodeAt() - 97;
+    arr[index]++;
+  }
+  for (let x of t) {
+    let index = x.charCodeAt() - 97;
+    if (--arr[index] < 0) {
+      return false;
+    }
+  }
+  return arr.filter((x) => x !== 0)?.length === 0;
+};
+```

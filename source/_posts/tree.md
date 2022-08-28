@@ -1214,6 +1214,156 @@ var invertTree = function (root) {
 };
 ```
 
+#### 33. 二叉搜索树中的搜索
+
+给定二叉搜索树（BST）的根节点  root  和一个整数值  val。
+
+你需要在 BST 中找到节点值等于  val  的节点。 返回以该节点为根的子树。 如果节点不存在，则返回  null 。
+
+```js
+// 递归
+/**
+ * @param {TreeNode} root
+ * @param {number} val
+ * @return {TreeNode}
+ */
+var searchBST = function (root, val) {
+  if (!root || root.val === val) {
+    return root;
+  }
+  if (root.val < val) {
+    return searchBST(root.right, val);
+  } else {
+    return searchBST(root.left, val);
+  }
+};
+// 循环
+var searchBST = function (root, val) {
+  if (!root || root.val === val) {
+    return root;
+  }
+  while (root) {
+    if (root.val === val) {
+      return root;
+    }
+    root = root.val < val ? root.right : root.left;
+  }
+  return null;
+};
+```
+
+#### 34. 二叉搜索树中的插入操作
+
+给定二叉搜索树（BST）的根节点  root  和要插入树中的值  value ，将值插入二叉搜索树。 返回插入后二叉搜索树的根节点。 输入数据 保证 ，新值和原始二叉搜索树中的任意节点值都不同。
+
+注意，可能存在多种有效的插入方式，只要树在插入后仍保持为二叉搜索树即可。 你可以返回 任意有效的结果 。
+
+```js
+/**
+ * @param {TreeNode} root
+ * @param {number} val
+ * @return {TreeNode}
+ */
+var insertIntoBST = function (root, val) {
+  if (!root) {
+    let node = new TreeNode(val);
+    return node;
+  }
+  let head = root;
+  while (head) {
+    if (head.val < val) {
+      if (head.right === null) {
+        head.right = new TreeNode(val);
+        break;
+      } else {
+        head = head.right;
+      }
+    } else {
+      if (head.left === null) {
+        head.left = new TreeNode(val);
+        break;
+      } else {
+        head = head.left;
+      }
+    }
+  }
+  return root;
+};
+```
+
+#### 35. 验证二叉搜索树
+
+给你一个二叉树的根节点 root ，判断其是否是一个有效的二叉搜索树。
+
+有效 二叉搜索树定义如下：
+
+节点的左子树只包含 小于 当前节点的数。
+节点的右子树只包含 大于 当前节点的数。
+所有左子树和右子树自身必须也是二叉搜索树。
+
+```js
+/**
+ * @param {TreeNode} root
+ * @return {boolean}
+ * 中序遍历是一个递增的数组
+ */
+var isValidBST = function (root) {
+  if (!root) {
+    return true;
+  }
+  let stack = [];
+  let node = root;
+  let inorder = -Infinity;
+  while (node || stack.length) {
+    while (node) {
+      stack.push(node);
+      node = node.left;
+    }
+    node = stack.pop();
+    // 如果中序遍历得到的节点的值小于等于前一个 inorder，说明不是二叉搜索树
+    if (node.val <= inorder) {
+      return false;
+    }
+    inorder = node.val;
+    node = node.right;
+  }
+  return true;
+};
+```
+
+#### 36. 两数之和 IV - 输入二叉搜索树
+
+给定一个二叉搜索树 root 和一个目标结果 k，如果二叉搜索树中存在两个元素且它们的和等于给定的目标结果，则返回 true。
+
+```js
+/**
+ * @param {TreeNode} root
+ * @param {number} k
+ * @return {boolean}
+ */
+var findTarget = function (root, k) {
+  if (!root) {
+    return false;
+  }
+  let stack = [];
+  let map = new Map();
+  while (root || stack.length) {
+    while (root) {
+      stack.push(root);
+      root = root.left;
+    }
+    root = stack.pop();
+    if (map.has(k - root.val)) {
+      return true;
+    } else {
+      map.set(root.val, 1);
+    }
+    root = root.right;
+  }
+  return false;
+};
+```
+
 #### 8、二叉树的镜像
 
 请完成一个函数，输入一个二叉树，该函数输出它的镜像。
