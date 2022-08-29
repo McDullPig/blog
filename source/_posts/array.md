@@ -2,7 +2,7 @@
 
 ### 1、数组
 
-#### 1、有序数组的平方
+#### 1、有序数组的平方 「排序」
 
 给你一个按非递减顺序排序的整数数组 nums，返回 每个数字的平方 组成的新数组，要求也按 非递减顺序 排序。
 
@@ -19,7 +19,7 @@ var sortedSquares = function (nums) {
 };
 ```
 
-#### 2、轮转数组
+#### 2、轮转数组 「双指针」
 
 给你一个数组，将数组中的元素向右轮转 k 个位置，其中 k 是非负数。
 
@@ -66,7 +66,7 @@ function reverse(nums, left, right) {
 }
 ```
 
-#### 3、移动零
+#### 3、移动零 「双指针」
 
 给定一个数组 nums，编写一个函数将所有 0 移动到数组的末尾，同时保持非零元素的相对顺序。
 
@@ -91,7 +91,7 @@ var moveZeroes = function (nums) {
 };
 ```
 
-#### 4-1、两数之和
+#### 4-1、两数之和 「哈希表」
 
 给定一个整数数组 nums  和一个整数目标值 target，请你在该数组中找出 和为目标值 target  的那两个整数，并返回它们的数组下标。
 
@@ -114,7 +114,7 @@ var twoSum = function (nums, target) {
 };
 ```
 
-#### 4-2、两数之和 II - 输入有序数组
+#### 4-2、两数之和 II - 输入有序数组 「双指针」
 
 给你一个下标从 1 开始的整数数组  numbers ，该数组已按 非递减顺序排列   ，请你从数组中找出满足相加之和等于目标数  target 的两个数。如果设这两个数分别是 numbers[index1] 和 numbers[index2] ，则 1 <= index1 < index2 <= numbers.length 。
 
@@ -127,7 +127,7 @@ var twoSum = function (nums, target) {
 ```js
 var twoSum = function (numbers, target) {
   let len = numbers.length;
-  if (len < 2 && numbers[0] > target) {
+  if (len < 2) {
     return [];
   }
   let left = 0;
@@ -145,7 +145,501 @@ var twoSum = function (numbers, target) {
 };
 ```
 
-### 2、二分查找
+#### 5、存在重复元素 「哈希表」
+
+给你一个整数数组 nums 。如果任一值在数组中出现 至少两次 ，返回 true ；如果数组中每个元素互不相同，返回 false 。
+
+```js
+/**
+ * @param {number[]} nums
+ * @return {boolean}
+ */
+// 1、哈希表
+var containsDuplicate = function (nums) {
+  let len = nums.length;
+  if (len <= 1) {
+    return false;
+  }
+  let map = new Map();
+  for (let i = 0; i < len; i++) {
+    if (map.has(nums[i])) {
+      return true;
+    }
+    map.set(nums[i], 1);
+  }
+  return false;
+};
+// 2、set的特性,将重复的去掉
+var containsDuplicate = function (nums) {
+  const len = nums.length;
+  if (len <= 1) {
+    return false;
+  }
+  const set = new Set([...nums]);
+  return nums.length !== [...set].length;
+};
+```
+
+#### 6、 合并两个有序数组 「双指针、排序」
+
+给你两个按 非递减顺序 排列的整数数组  nums1 和 nums2，另有两个整数 m 和 n ，分别表示 nums1 和 nums2 中的元素数目。
+
+请你 合并 nums2 到 nums1 中，使合并后的数组同样按 非递减顺序 排列。
+
+注意：最终，合并后数组不应由函数返回，而是存储在数组 nums1 中。为了应对这种情况，nums1 的初始长度为 m + n，其中前 m 个元素表示应合并的元素，后 n 个元素为 0 ，应忽略。nums2 的长度为 n 。
+
+```js
+var merge = function (nums1, m, nums2, n) {
+  let len1 = nums1.length;
+  if (len1 !== m + n || m < 0 || n < 0) {
+    return;
+  }
+  if (n === 0) {
+    return nums1;
+  }
+  let p1 = m - 1,
+    p2 = n - 1;
+  let tail = len1 - 1;
+  let cur;
+  while (p1 >= 0 || p2 >= 0) {
+    if (p1 === -1) {
+      cur = nums2[p2--];
+    } else if (p2 === -1) {
+      cur = nums1[p1--];
+    } else if (nums1[p1] > nums2[p2]) {
+      cur = nums1[p1--];
+    } else {
+      cur = nums2[p2--];
+    }
+    nums1[tail--] = cur;
+  }
+};
+```
+
+#### 7、两个数组的交集 II 「双指针、哈希」
+
+给你两个整数数组  nums1 和 nums2 ，请你以数组形式返回两数组的交集。返回结果中每个元素出现的次数，应与元素在两个数组中都出现的次数一致（如果出现次数不一致，则考虑取较小值）。可以不考虑输出结果的顺序。
+
+```js
+// 1、哈希的解法
+var intersect = function (nums1, nums2) {
+  let len1 = nums1.length;
+  let len2 = nums2.length;
+  if (len1 < 1 || len2 < 1) {
+    return [];
+  }
+  let map = new Map();
+  let res = [];
+  for (let val of nums1) {
+    if (map.has(val)) {
+      map.set(val, map.get(val) + 1);
+    } else {
+      map.set(val, 1);
+    }
+  }
+  for (let val of nums2) {
+    let count = map.get(val);
+    if (count) {
+      res.push(val);
+      map.set(val, count - 1);
+    }
+  }
+  return res;
+};
+
+// 2、双指针
+var intersect = function (nums1, nums2) {
+  let len1 = nums1.length;
+  let len2 = nums2.length;
+  if (len1 < 1 || len2 < 1) {
+    return [];
+  }
+  let res = [];
+  nums1.sort((a, b) => a - b);
+  nums2.sort((a, b) => a - b);
+  let l1 = 0,
+    l2 = 0;
+  while (l1 < len1 && l2 < len2) {
+    if (nums1[l1] === nums2[l2]) {
+      res.push(nums1[l1]);
+      l1++;
+      l2++;
+    } else if (nums1[l1] < nums2[l2]) {
+      l1++;
+    } else {
+      l2++;
+    }
+  }
+  return res;
+};
+```
+
+#### 8、重塑矩阵
+
+在 MATLAB 中，有一个非常有用的函数 reshape ，它可以将一个  m x n 矩阵重塑为另一个大小不同（r x c）的新矩阵，但保留其原始数据。
+
+给你一个由二维数组 mat 表示的  m x n 矩阵，以及两个正整数 r 和 c ，分别表示想要的重构的矩阵的行数和列数。
+
+重构后的矩阵需要将原始矩阵的所有元素以相同的 行遍历顺序 填充。
+
+如果具有给定参数的 reshape 操作是可行且合理的，则输出新的重塑矩阵；否则，输出原始矩阵.
+
+```js
+/**
+ * @param {number[][]} mat
+ * @param {number} r
+ * @param {number} c
+ * @return {number[][]}
+ */
+// 1、双层for循环，直接将二维数组转成另一个二维数组
+var matrixReshape = function (mat, r, c) {
+  let rows = mat.length;
+  if (rows < 1 || mat[0].length < 1) {
+    return mat;
+  }
+  let cols = mat[0].length;
+  if (rows * cols !== r * c) {
+    return mat;
+  }
+  let newI = 0;
+  let newJ = 0;
+  let newMat = new Array(r).fill(0).map((item) => new Array(c).fill(0));
+  for (let i = 0; i < rows; i++) {
+    for (let j = 0; j < cols; j++) {
+      if (newJ === c) {
+        newJ = 0;
+        newI++;
+      }
+      newMat[newI][newJ++] = mat[i][j];
+    }
+  }
+  return newMat;
+};
+// 2、先转为一维数组，再转成r*c的二维数组
+```
+
+#### 9、矩阵重置 「矩阵特性」
+
+给定一个 m x n 的矩阵，如果一个元素为 0 ，则将其所在行和列的所有元素都设为 0 。请使用 原地 算法。
+
+```js
+/**
+ * @param {number[][]} matrix
+ * @return {void} Do not return anything, modify matrix in-place instead.
+ */
+var setZeroes = function (matrix) {
+  const rows = matrix.length;
+  if (rows < 1 || matrix[0].length < 1) {
+    return;
+  }
+  const cols = matrix[0].length;
+  let flagCol0 = false;
+  // 使用第一列和第一行去记录数组中该行该列是否有0
+  for (let i = 0; i < rows; i++) {
+    // 记录第一列有没有0
+    if (matrix[i][0] === 0) {
+      flagCol0 = true;
+    }
+    for (let j = 1; j < cols; j++) {
+      if (matrix[i][j] === 0) {
+        matrix[i][0] = 0;
+        matrix[0][j] = 0;
+      }
+    }
+  }
+  // 根据第一行第一列重置0,不能从第一行开始，因为从第一行开始，会先把第一行的记录都丢失
+  for (let i = rows - 1; i >= 0; i--) {
+    for (let j = 1; j < cols; j++) {
+      if (matrix[i][0] === 0 || matrix[0][j] === 0) {
+        matrix[i][j] = 0;
+      }
+    }
+    if (flagCol0) {
+      matrix[i][0] = 0;
+    }
+  }
+};
+```
+
+#### 10、有效的数独
+
+请你判断一个  9 x 9 的数独是否有效。只需要根据以下规则 ，验证已经填入的数字是否有效即可。
+
+数字  1-9  在每一行只能出现一次。
+数字  1-9  在每一列只能出现一次。
+数字  1-9  在每一个以粗实线分隔的  3x3  宫内只能出现一次。（请参考示例图）
+
+注意：
+
+一个有效的数独（部分已被填充）不一定是可解的。
+只需要根据以上规则，验证已经填入的数字是否有效即可。
+空白格用  '.'  表示。
+
+```js
+/**
+ * @param {character[][]} board
+ * @return {boolean}
+ */
+var isValidSudoku = function (board) {
+  // 保存每一行的数字
+  const rows = new Array(9).fill(0).map(() => new Array(9).fill(0));
+  // 保存每一列的数字
+  const cols = new Array(9).fill(0).map(() => new Array(9).fill(0));
+  //使用三维数组去保存每一个3X3的表格中的数字
+  const subboxes = new Array(3)
+    .fill(0)
+    .map(() => new Array(3).fill(0).map(() => new Array(9).fill(0)));
+  for (let i = 0; i < 9; i++) {
+    for (let j = 0; j < 9; j++) {
+      const c = board[i][j];
+      //当前字符如果是数字，就在该行该列以及3X3的表格中添加进去，如果相同字符的个数超过了1，就不是有效的数独
+      if (c !== ".") {
+        const index = +c - 1;
+        rows[i][index]++;
+        cols[j][index]++;
+        subboxes[Math.floor(i / 3)][Math.floor(j / 3)][index]++;
+        if (
+          rows[i][index] > 1 ||
+          cols[j][index] > 1 ||
+          subboxes[Math.floor(i / 3)][Math.floor(j / 3)][index] > 1
+        ) {
+          return false;
+        }
+      }
+    }
+  }
+  return true;
+};
+```
+
+#### 11、只出现一次的数字
+
+给定一个非空整数数组，除了某个元素只出现一次以外，其余每个元素均出现两次。找出那个只出现了一次的元素。
+
+说明：你的算法应该具有线性时间复杂度。 你可以不使用额外空间来实现吗？
+
+```js
+/**
+ * @param {number[]} nums
+ * @return {number} 使用异或，
+ */
+var singleNumber = function (nums) {
+  if (nums.length === 1) {
+    return nums[0];
+  }
+  let res = nums[0];
+  for (let i = 1; i < nums.length; i++) {
+    res = res ^ nums[i];
+  }
+  return res;
+};
+```
+
+#### 12、多数元素
+
+给定一个大小为 n 的数组  nums ，返回其中的多数元素。多数元素是指在数组中出现次数大于  ⌊ n/2 ⌋  的元素。
+
+你可以假设数组是非空的，并且给定的数组总是存在多数元素。
+
+```js
+var majorityElement = function (nums) {
+  let len = nums.length;
+  if (len === 0) {
+    return 0;
+  }
+  if (len === 1) {
+    return nums[0];
+  }
+  let count = 1;
+  let num = nums[0];
+  for (let i = 1; i < len; i++) {
+    if (num === nums[i]) {
+      count++;
+    } else {
+      count--;
+      if (count === 0) {
+        num = nums[i];
+        count++;
+      }
+    }
+  }
+  return num;
+};
+```
+
+#### 13、三数之和
+
+给你一个包含 n 个整数的数组 nums，判断 nums  中是否存在三个元素 a，b，c ，使得  a + b + c = 0，请你找出所有和为 0 且不重复的三元组。
+
+注意：答案中不可以包含重复的三元组。
+
+```js
+var threeSum = function (nums) {
+  nums.sort((a, b) => a - b); //排序，排序之后循环找
+  const len = nums.length;
+  if (len < 3 || nums[0] > 0) {
+    return [];
+  }
+  let res = [];
+  for (let i = 0; i < len - 2; i++) {
+    // 只对比当前数字后面的数，所以排序数组如果大于0，后面的和一定大于0
+    if (nums[i] > 0) {
+      break;
+    }
+    // 如果当前的值和前面的一样，会出现重复的数，所以忽略掉这个值
+    if (i > 0 && nums[i] === nums[i - 1]) {
+      continue;
+    }
+    let left = i + 1;
+    let right = len - 1;
+    while (left < right) {
+      const sum = nums[i] + nums[left] + nums[right];
+      if (sum === 0) {
+        res.push([nums[i], nums[left], nums[right]]);
+        // 下面两个while循环是去重的，[-2,0,0,2,2]
+        while (left < right && nums[left] === nums[left + 1]) {
+          left++;
+        }
+        while (left < right && nums[right] === nums[right - 1]) {
+          right--;
+        }
+        left++;
+        right--;
+      } else if (sum < 0) {
+        left++;
+      } else if (sum > 0) {
+        right--;
+      }
+    }
+  }
+  return res;
+};
+```
+
+#### 14、
+
+#### 1、岛屿的最大面积
+
+给你一个大小为 m x n 的二进制矩阵 grid 。
+
+岛屿   是由一些相邻的  1 (代表土地) 构成的组合，这里的「相邻」要求两个 1 必须在 水平或者竖直的四个方向上 相邻。你可以假设  grid 的四个边缘都被 0（代表水）包围着。
+
+岛屿的面积是岛上值为 1 的单元格的数目。
+
+计算并返回 grid 中最大的岛屿面积。如果没有岛屿，则返回面积为 0 。
+
+```js
+// DFS
+
+// BFS
+```
+
+01 矩阵
+
+给定一个由 0 和 1 组成的矩阵 mat ，请输出一个大小相同的矩阵，其中每一个格子是 mat 中对应位置元素到最近的 0 的距离。
+
+两个相邻元素间的距离为 1 。
+
+```js
+
+```
+
+### 2、栈和队列
+
+#### 1、有效的括号
+
+给定一个只包括 '('，')'，'{'，'}'，'['，']'  的字符串 s ，判断字符串是否有效。
+
+```js
+var isValid = function (s) {
+  if (s.length < 1) {
+    return true;
+  }
+  let map = {
+    ")": "(",
+    "}": "{",
+    "]": "[",
+  };
+  let stack = []; //使用栈，将左边括号进栈
+  for (let i = 0; i < s.length; i++) {
+    if (s[i] === "(" || s[i] === "{" || s[i] === "[") {
+      stack.push(s[i]);
+    } else {
+      if (stack.length !== 0 && stack[stack.length - 1] === map[s[i]]) {
+        stack.pop();
+      } else {
+        return false;
+      }
+    }
+  }
+  return stack.length === 0;
+};
+```
+
+#### 2. 用栈实现队列
+
+用两个栈实现一个队列。队列的声明如下，请实现它的两个函数 appendTail 和 deleteHead ，分别完成在队列尾部插入整数和在队列头部删除整数的功能。(若队列中没有元素，deleteHead  操作返回 -1 )
+
+```js
+//js数组单独可以当队列使用，如果一定要使用栈改成队列的话，使用两个栈，一个 保存数据，把栈出来进另一个栈，就是出来的顺序。
+
+// 不是每次都在一个栈进另一个栈，只有当B栈没有数据的时候，再在A栈进B栈，如果进完还是没有数据，返回-1。
+
+var MyQueue = function () {
+  this.pushed = [];
+  this.popped = [];
+};
+
+/**
+ * @param {number} x
+ * @return {void}
+ */
+MyQueue.prototype.push = function (x) {
+  this.pushed.push(x);
+};
+
+/**
+ * @return {number}
+ * 只有每次出栈的栈中没有数据，才会把入栈的数据放到出栈的栈中
+ */
+MyQueue.prototype.pop = function () {
+  if (this.popped.length !== 0) {
+    return this.popped.pop();
+  } else {
+    while (this.pushed.length !== 0) {
+      this.popped.push(this.pushed.pop());
+    }
+    return this.popped.length !== 0 ? this.popped.pop() : -1;
+  }
+};
+
+/**
+ * @return {number}
+ */
+MyQueue.prototype.peek = function () {
+  if (this.popped.length !== 0) {
+    return this.popped[this.popped.length - 1];
+  } else {
+    if (this.pushed.length !== 0) {
+      return this.pushed[0];
+    } else {
+      return -1;
+    }
+  }
+};
+
+/**
+ * @return {boolean}
+ */
+MyQueue.prototype.empty = function () {
+  if (this.pushed.length === 0 && this.popped.length === 0) {
+    return true;
+  }
+  return false;
+};
+```
+
+### 3、二分查找
 
 #### 1、二分查找
 
@@ -248,6 +742,142 @@ var searchInsert = function (nums, target) {
     }
   }
   return left;
+};
+```
+
+### 4、回溯和递归
+
+#### 1、组合
+
+给定两个整数 n 和 k，返回范围 [1, n] 中所有可能的 k 个数的组合。
+
+你可以按 任何顺序 返回答案。
+
+```
+输入：n = 4, k = 2
+输出：
+[
+  [2,4],
+  [3,4],
+  [2,3],
+  [1,2],
+  [1,3],
+  [1,4],
+]
+```
+
+```js
+var combine = function (n, k) {
+  if (n < 1 || k < 1) {
+    return [];
+  }
+  let res = [];
+  let item = [];
+  function DFS(n, itemLen, start) {
+    // 如果长度正好是k就是加到最后的数组中
+    if (itemLen === k) {
+      res.push([...item]);
+      return;
+    }
+    // 如果没有满足k段就到最后了，直接返回
+    if (start > n) {
+      return;
+    }
+    for (let i = start; i <= n; i++) {
+      item.push(i);
+      DFS(n, itemLen + 1, i + 1);
+      item.pop();
+    }
+  }
+  DFS(n, 0, 1);
+  return res;
+};
+```
+
+#### 2、全排列
+
+给定一个不含重复数字的数组 nums ，返回其 所有可能的全排列 。你可以 按任意顺序 返回答案。
+
+```js
+
+```
+
+### 5、位运算
+
+#### 1、2 的幂
+
+给你一个整数 n，请你判断该整数是否是 2 的幂次方。如果是，返回 true ；否则，返回 false 。
+
+如果存在一个整数 x 使得  n == 2x ，则认为 n 是 2 的幂次方。
+
+```js
+// 循环
+/**
+ * @param {number} n
+ * @return {boolean}
+ */
+var isPowerOfTwo = function (n) {
+  if (n < 1) {
+    return false;
+  }
+  if (n === 1) {
+    return true;
+  }
+  let res = 1;
+  while (res < n) {
+    res = res * 2;
+  }
+  return res === n;
+};
+// 位运算， n& (n-1) 会把最低位的1给删掉
+var isPowerOfTwo = function (n) {
+  return n > 0 && (n & (n - 1)) === 0;
+};
+```
+
+#### 2、位 1 的个数
+
+编写一个函数，输入是一个无符号整数（以二进制串的形式），返回其二进制表达式中数字位数为 '1' 的个数（也被称为汉明重量）。
+
+提示：
+
+请注意，在某些语言（如 Java）中，没有无符号整数类型。在这种情况下，输入和输出都将被指定为有符号整数类型，并且不应影响您的实现，因为无论整数是有符号的还是无符号的，其内部的二进制表示形式都是相同的。
+在 Java 中，编译器使用二进制补码记法来表示有符号整数。因此，在上面的   示例 3  中，输入表示有符号整数 -3。
+
+```js
+// 1、因为有可能出现负数，n右移一位会出现符号位不变，所以是拿1往左走
+/**
+ * @param {number} n - a positive integer
+ * @return {number}
+ */
+var hammingWeight = function (n) {
+  if (n === 0) {
+    return 0;
+  }
+  if (n === 1 || n === 2) {
+    return 1;
+  }
+  let i = 1;
+  let count = 0;
+  let flag = 1;
+  while (i <= 32) {
+    (n & flag) !== 0 ? count++ : count;
+    flag = flag << 1;
+    i++;
+  }
+  return count;
+};
+// 2、根据 n & n-1 ,可以消除最低位的1。比如3是0011，2是0010， 2&3 = 0010。
+var hammingWeight = function (n) {
+  if (n === 1 || n === 2) {
+    return 1;
+  }
+  let count = 0;
+  while (n) {
+    count++;
+    n = n & (n - 1);
+  }
+  return count;
 };
 ```
 
@@ -385,37 +1015,6 @@ var printNumbers = function (n) {
   return res.fill(1).map((i, index) => {
     return index + 1;
   });
-};
-```
-
-#### 9. 数组中出现次数超过一半的数字
-
-数组中有一个数字出现的次数超过数组长度的一半，请找出这个数字。
-你可以假设数组是非空的，并且给定的数组总是存在多数元素
-
-```js
-var majorityElement = function (nums) {
-  let len = nums.length;
-  if (len === 0) {
-    return 0;
-  }
-  if (len === 1) {
-    return nums[0];
-  }
-  let count = 1;
-  let num = nums[0];
-  for (let i = 1; i < len; i++) {
-    if (num === nums[i]) {
-      count++;
-    } else {
-      count--;
-      if (count === 0) {
-        num = nums[i];
-        count++;
-      }
-    }
-  }
-  return num;
 };
 ```
 
@@ -623,26 +1222,6 @@ var lastRemaining = function (n, m) {
 };
 
 //递归  return n > 0 ? (lastRemaining(n - 1, m) + m) % n : 0
-```
-
-#### 16、二进制中 1 的个数
-
-编写一个函数，输入是一个无符号整数（以二进制串的形式），返回其二进制表达式中数字位数为 '1' 的个数（也被称为 汉明重量).）。
-
-```js
-// 根据 n & n-1 ,可以消除最低位的1。比如3是0011，2是0010， 2&3 = 0010。
-
-var hammingWeight = function (n) {
-  if (n === 1) {
-    return 1;
-  }
-  let count = 0;
-  while (n) {
-    count++;
-    n = n & (n - 1);
-  }
-  return count;
-};
 ```
 
 #### 17、最小的 k 个数
@@ -1196,86 +1775,7 @@ var twoSum = function (nums, target) {
 };
 ```
 
-#### 2、三数之和
-
-给你一个包含 n 个整数的数组  nums，判断  nums  中是否存在三个元素 a，b，c ，使得  a + b + c = 0 ？请你找出所有和为 0 且不重复的三元组。
-
-注意：答案中不可以包含重复的三元组。
-
-```js
-var threeSum = function (nums) {
-  nums.sort((a, b) => a - b); //排序，排序之后循环找
-  const len = nums.length;
-  if (len < 3 || nums[0] > 0) {
-    return [];
-  }
-  let res = [];
-  for (let i = 0; i < len - 2; i++) {
-    // 只对比当前数字后面的数，所以排序数组如果大于0，后面的和一定大于0
-    if (nums[i] > 0) {
-      break;
-    }
-    // 如果当前的值和前面的一样，会出现重复的数，所以忽略掉这个值
-    if (i > 0 && nums[i] === nums[i - 1]) {
-      continue;
-    }
-    let left = i + 1;
-    let right = len - 1;
-    while (left < right) {
-      const sum = nums[i] + nums[left] + nums[right];
-      if (sum === 0) {
-        res.push([nums[i], nums[left], nums[right]]);
-        // 下面两个while循环是去重的，[-2,0,0,2,2]
-        while (left < right && nums[left] === nums[left + 1]) {
-          left++;
-        }
-        while (left < right && nums[right] === nums[right - 1]) {
-          right--;
-        }
-        left++;
-        right--;
-      } else if (sum < 0) {
-        left++;
-      } else if (sum > 0) {
-        right--;
-      }
-    }
-  }
-  return res;
-};
-```
-
 ### 栈
-
-#### 1、有效的括号
-
-给定一个只包括 '('，')'，'{'，'}'，'['，']'  的字符串 s ，判断字符串是否有效。
-
-```js
-var isValid = function (s) {
-  if (s.length < 1) {
-    return true;
-  }
-  let map = {
-    ")": "(",
-    "}": "{",
-    "]": "[",
-  };
-  let stack = []; //使用栈，将左边括号进栈
-  for (let i = 0; i < s.length; i++) {
-    if (s[i] === "(" || s[i] === "{" || s[i] === "[") {
-      stack.push(s[i]);
-    } else {
-      if (stack.length !== 0 && stack[stack.length - 1] === map[s[i]]) {
-        stack.pop();
-      } else {
-        return false;
-      }
-    }
-  }
-  return stack.length === 0;
-};
-```
 
 #### 1-1、有效的括号字符串
 
@@ -1475,108 +1975,7 @@ var dailyTemperatures = function (temperatures) {
 };
 ```
 
-### 队列
-
-#### 1、用栈实现队列
-
-用两个栈实现一个队列。队列的声明如下，请实现它的两个函数 appendTail 和 deleteHead ，分别完成在队列尾部插入整数和在队列头部删除整数的功能。(若队列中没有元素，deleteHead  操作返回 -1 )
-
-```js
-//js数组单独可以当队列使用，如果一定要使用栈改成队列的话，使用两个栈，一个 保存数据，把栈出来进另一个栈，就是出来的顺序。
-
-// 不是每次都在一个栈进另一个栈，只有当B栈没有数据的时候，再在A栈进B栈，如果进完还是没有数据，返回-1。
-
-var MyQueue = function () {
-  this.pushed = [];
-  this.popped = [];
-};
-
-/**
- * @param {number} x
- * @return {void}
- */
-MyQueue.prototype.push = function (x) {
-  this.pushed.push(x);
-};
-
-/**
- * @return {number}
- * 只有每次出栈的栈中没有数据，才会把入栈的数据放到出栈的栈中
- */
-MyQueue.prototype.pop = function () {
-  if (this.popped.length !== 0) {
-    return this.popped.pop();
-  } else {
-    while (this.pushed.length !== 0) {
-      this.popped.push(this.pushed.pop());
-    }
-    return this.popped.length !== 0 ? this.popped.pop() : -1;
-  }
-};
-
-/**
- * @return {number}
- */
-MyQueue.prototype.peek = function () {
-  if (this.popped.length !== 0) {
-    return this.popped[this.popped.length - 1];
-  } else {
-    if (this.pushed.length !== 0) {
-      return this.pushed[0];
-    } else {
-      return -1;
-    }
-  }
-};
-
-/**
- * @return {boolean}
- */
-MyQueue.prototype.empty = function () {
-  if (this.pushed.length === 0 && this.popped.length === 0) {
-    return true;
-  }
-  return false;
-};
-```
-
 ### 排序
-
-#### 1、合并两个有序数组
-
-给你两个按 非递减顺序 排列的整数数组  nums1 和 nums2，另有两个整数 m 和 n ，分别表示 nums1 和 nums2 中的元素数目。
-
-请你 合并 nums2 到 nums1 中，使合并后的数组同样按 非递减顺序 排列。
-
-注意：最终，合并后数组不应由函数返回，而是存储在数组 nums1 中。为了应对这种情况，nums1 的初始长度为 m + n，其中前 m 个元素表示应合并的元素，后 n 个元素为 0 ，应忽略。nums2 的长度为 n 。
-
-```js
-var merge = function (nums1, m, nums2, n) {
-  let len1 = nums1.length;
-  if (len1 !== m + n || m < 0 || n < 0) {
-    return;
-  }
-  if (n === 0) {
-    return nums1;
-  }
-  let p1 = m - 1,
-    p2 = n - 1;
-  let tail = m + n - 1;
-  let cur;
-  while (p1 >= 0 || p2 >= 0) {
-    if (p1 === -1) {
-      cur = nums2[p2--];
-    } else if (p2 === -1) {
-      cur = nums1[p1--];
-    } else if (nums1[p1] > nums2[p2]) {
-      cur = nums1[p1--];
-    } else {
-      cur = nums2[p2--];
-    }
-    nums1[tail--] = cur;
-  }
-};
-```
 
 #### 2、颜色分类
 
@@ -1957,8 +2356,6 @@ var search = function (nums, target) {
   return -1;
 };
 ```
-
-### 位运算
 
 #### 1. 整数反转
 
